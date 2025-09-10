@@ -3,129 +3,354 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>在线拍照工具</title>
+<title>WebView 权限测试 PoC</title>
 <style>
   body {
     font-family: Arial, sans-serif;
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    text-align: center;
   }
-  video, canvas {
-    width: 100%;
-    max-width: 400px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 15px;
-  }
-  #photo {
-    width: 100%;
-    max-width: 400px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    margin-top: 15px;
+  .test-section {
+    border: 1px solid #ddd;
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 5px;
   }
   button {
-    padding: 12px 24px;
-    font-size: 16px;
+    padding: 10px 15px;
+    margin: 5px;
     background: #007bff;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 3px;
     cursor: pointer;
-    margin: 5px;
   }
-  button:hover {
-    background: #0056b3;
+  button:hover { background: #0056b3; }
+  .result {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
   }
-  button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-  }
-  .error {
-    color: red;
+  .success { border-left-color: #28a745; background: #d4edda; }
+  .error { border-left-color: #dc3545; background: #f8d7da; }
+  video, audio {
+    width: 100%;
+    max-width: 300px;
+    border: 1px solid #ccc;
     margin: 10px 0;
   }
 </style>
 </head>
 <body>
-<h1>📸 在线拍照工具</h1>
-<p>点击下方按钮开始使用摄像头拍照</p>
+<h1>🔍 WebView 权限测试 PoC</h1>
+<p>此页面用于测试 Android WebView 的权限处理是否存在安全漏洞</p>
 
-<div id="error-msg" class="error" style="display:none;"></div>
-
-<video id="video" autoplay playsinline></video>
-<canvas id="canvas" style="display:none;"></canvas>
-
-<div>
-  <button id="start-camera">开启摄像头</button>
-  <button id="capture" disabled>📸 拍照</button>
-  <button id="download" style="display:none;">💾 下载照片</button>
+<!-- 摄像头权限测试 -->
+<div class="test-section">
+  <h3>📹 摄像头权限测试</h3>
+  <button onclick="testCamera()">请求摄像头权限</button>
+  <button onclick="testCameraWithoutPermission()">直接访问摄像头</button>
+  <div id="camera-result" class="result"></div>
+  <video id="camera-video" autoplay playsinline style="display:none;"></video>
 </div>
 
-<img id="photo" alt="拍摄的照片" style="display:none;">
+<!-- 麦克风权限测试 -->
+<div class="test-section">
+  <h3>🎤 麦克风权限测试</h3>
+  <button onclick="testMicrophone()">请求麦克风权限</button>
+  <button onclick="testAudioRecording()">开始录音测试</button>
+  <div id="mic-result" class="result"></div>
+  <audio id="audio-playback" controls style="display:none;"></audio>
+</div>
+
+<!-- 同时请求多个权限 -->
+<div class="test-section">
+  <h3>🔄 批量权限测试</h3>
+  <button onclick="testMultiplePermissions()">同时请求摄像头+麦克风</button>
+  <div id="multiple-result" class="result"></div>
+  <video id="multiple-video" autoplay playsinline style="display:none;"></video>
+</div>
+
+<!-- 恶意测试 -->
+<div class="test-section">
+  <h3>⚠️ 潜在恶意行为测试</h3>
+  <button onclick="continuousAccess()">持续访问测试</button>
+  <button onclick="backgroundAccess()">后台访问测试</button>
+  <div id="malicious-result" class="result"></div>
+</div>
+
+<!-- 权限信息收集 -->
+<div class="test-section">
+  <h3>📊 权限信息收集</h3>
+  <button onclick="collectPermissionInfo()">收集权限信息</button>
+  <div id="info-result" class="result"></div>
+</div>
 
 <script>
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  const photo = document.getElementById('photo');
-  const startBtn = document.getElementById('start-camera');
-  const captureBtn = document.getElementById('capture');
-  const downloadBtn = document.getElementById('download');
-  const errorMsg = document.getElementById('error-msg');
+let mediaStream = null;
+let mediaRecorder = null;
+let recordedChunks = [];
 
-  let stream = null;
-
-  // 开启摄像头
-  startBtn.addEventListener('click', async () => {
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'user' } // 前置摄像头
-      });
-      video.srcObject = stream;
-      startBtn.disabled = true;
-      captureBtn.disabled = false;
-      errorMsg.style.display = 'none';
-    } catch (err) {
-      showError('无法访问摄像头，请确保已授权摄像头权限');
-      console.error('Camera error:', err);
-    }
-  });
-
-  // 拍照
-  captureBtn.addEventListener('click', () => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const dataURL = canvas.toDataURL('image/png');
-    photo.src = dataURL;
-    photo.style.display = 'block';
-    downloadBtn.style.display = 'inline-block';
-  });
-
-  // 下载照片
-  downloadBtn.addEventListener('click', () => {
-    const link = document.createElement('a');
-    link.download = 'photo-' + new Date().getTime() + '.png';
-    link.href = photo.src;
-    link.click();
-  });
-
-  // 显示错误信息
-  function showError(message) {
-    errorMsg.textContent = message;
-    errorMsg.style.display = 'block';
+// 测试摄像头权限
+async function testCamera() {
+  const resultDiv = document.getElementById('camera-result');
+  const video = document.getElementById('camera-video');
+  
+  try {
+    resultDiv.innerHTML = '🔄 正在请求摄像头权限...';
+    
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        facingMode: 'user'
+      }
+    });
+    
+    video.srcObject = stream;
+    video.style.display = 'block';
+    mediaStream = stream;
+    
+    resultDiv.innerHTML = '✅ 摄像头权限获取成功！可以访问摄像头';
+    resultDiv.className = 'result success';
+    
+    // 获取摄像头信息
+    const videoTrack = stream.getVideoTracks()[0];
+    const settings = videoTrack.getSettings();
+    resultDiv.innerHTML += `<br>📱 摄像头信息: ${settings.width}x${settings.height}, 设备ID: ${settings.deviceId}`;
+    
+  } catch (error) {
+    resultDiv.innerHTML = `❌ 摄像头权限被拒绝: ${error.message}`;
+    resultDiv.className = 'result error';
   }
+}
 
-  // 页面关闭时停止摄像头
-  window.addEventListener('beforeunload', () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+// 测试麦克风权限
+async function testMicrophone() {
+  const resultDiv = document.getElementById('mic-result');
+  
+  try {
+    resultDiv.innerHTML = '🔄 正在请求麦克风权限...';
+    
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100
+      }
+    });
+    
+    resultDiv.innerHTML = '✅ 麦克风权限获取成功！';
+    resultDiv.className = 'result success';
+    
+    // 获取音频设备信息
+    const audioTrack = stream.getAudioTracks()[0];
+    const settings = audioTrack.getSettings();
+    resultDiv.innerHTML += `<br>🎵 音频信息: 采样率 ${settings.sampleRate}Hz, 设备ID: ${settings.deviceId}`;
+    
+    stream.getTracks().forEach(track => track.stop());
+    
+  } catch (error) {
+    resultDiv.innerHTML = `❌ 麦克风权限被拒绝: ${error.message}`;
+    resultDiv.className = 'result error';
+  }
+}
+
+// 测试同时请求多个权限
+async function testMultiplePermissions() {
+  const resultDiv = document.getElementById('multiple-result');
+  const video = document.getElementById('multiple-video');
+  
+  try {
+    resultDiv.innerHTML = '🔄 正在同时请求摄像头和麦克风权限...';
+    
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    });
+    
+    video.srcObject = stream;
+    video.style.display = 'block';
+    
+    resultDiv.innerHTML = '✅ 成功获取摄像头和麦克风权限！';
+    resultDiv.className = 'result success';
+    
+    const videoTracks = stream.getVideoTracks();
+    const audioTracks = stream.getAudioTracks();
+    
+    resultDiv.innerHTML += `<br>📹 视频轨道: ${videoTracks.length}个`;
+    resultDiv.innerHTML += `<br>🎤 音频轨道: ${audioTracks.length}个`;
+    
+  } catch (error) {
+    resultDiv.innerHTML = `❌ 权限请求失败: ${error.message}`;
+    resultDiv.className = 'result error';
+  }
+}
+
+// 录音测试
+async function testAudioRecording() {
+  const resultDiv = document.getElementById('mic-result');
+  const audioPlayback = document.getElementById('audio-playback');
+  
+  try {
+    if (!mediaRecorder) {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      recordedChunks = [];
+      
+      mediaRecorder.ondataavailable = function(event) {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = function() {
+        const blob = new Blob(recordedChunks, { type: 'audio/wav' });
+        const audioURL = URL.createObjectURL(blob);
+        audioPlayback.src = audioURL;
+        audioPlayback.style.display = 'block';
+        resultDiv.innerHTML += '<br>🎵 录音完成，可以播放！';
+      };
+      
+      mediaRecorder.start();
+      resultDiv.innerHTML += '<br>🔴 开始录音...（3秒后自动停止）';
+      
+      setTimeout(() => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+          mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        }
+      }, 3000);
     }
-  });
+  } catch (error) {
+    resultDiv.innerHTML += `<br>❌ 录音失败: ${error.message}`;
+  }
+}
+
+// 恶意行为测试：持续访问
+async function continuousAccess() {
+  const resultDiv = document.getElementById('malicious-result');
+  
+  try {
+    resultDiv.innerHTML = '⚠️ 开始持续访问摄像头测试...';
+    
+    for (let i = 0; i < 10; i++) {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setTimeout(() => {
+        stream.getTracks().forEach(track => track.stop());
+      }, 1000);
+      
+      resultDiv.innerHTML += `<br>第${i+1}次访问成功`;
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    
+    resultDiv.innerHTML += '<br>✅ 持续访问测试完成 - 可能存在权限控制绕过！';
+    resultDiv.className = 'result success';
+    
+  } catch (error) {
+    resultDiv.innerHTML += `<br>❌ 持续访问被阻止: ${error.message}`;
+    resultDiv.className = 'result error';
+  }
+}
+
+// 后台访问测试
+function backgroundAccess() {
+  const resultDiv = document.getElementById('malicious-result');
+  
+  resultDiv.innerHTML = '⚠️ 测试页面隐藏时的权限访问...';
+  
+  // 模拟页面隐藏
+  setTimeout(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: true, 
+        audio: true 
+      });
+      
+      resultDiv.innerHTML += '<br>🚨 危险：在页面隐藏状态下仍可访问摄像头和麦克风！';
+      resultDiv.className = 'result error';
+      
+      // 2秒后关闭
+      setTimeout(() => {
+        stream.getTracks().forEach(track => track.stop());
+      }, 2000);
+      
+    } catch (error) {
+      resultDiv.innerHTML += '<br>✅ 后台访问被正确阻止';
+      resultDiv.className = 'result success';
+    }
+  }, 1000);
+}
+
+// 收集权限和设备信息
+async function collectPermissionInfo() {
+  const resultDiv = document.getElementById('info-result');
+  let info = '<h4>📊 设备和权限信息：</h4>';
+  
+  try {
+    // 获取媒体设备列表
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    
+    info += `<br><strong>🎥 视频设备:</strong>`;
+    devices.filter(device => device.kind === 'videoinput').forEach((device, index) => {
+      info += `<br>  ${index + 1}. ${device.label || '摄像头'} (ID: ${device.deviceId.substring(0, 10)}...)`;
+    });
+    
+    info += `<br><strong>🎤 音频输入设备:</strong>`;
+    devices.filter(device => device.kind === 'audioinput').forEach((device, index) => {
+      info += `<br>  ${index + 1}. ${device.label || '麦克风'} (ID: ${device.deviceId.substring(0, 10)}...)`;
+    });
+    
+    info += `<br><strong>🔊 音频输出设备:</strong>`;
+    devices.filter(device => device.kind === 'audiooutput').forEach((device, index) => {
+      info += `<br>  ${index + 1}. ${device.label || '扬声器'} (ID: ${device.deviceId.substring(0, 10)}...)`;
+    });
+    
+    // 浏览器信息
+    info += `<br><br><strong>🌐 浏览器信息:</strong>`;
+    info += `<br>User Agent: ${navigator.userAgent}`;
+    info += `<br>当前域名: ${window.location.origin}`;
+    info += `<br>协议: ${window.location.protocol}`;
+    
+    // 权限API测试
+    if ('permissions' in navigator) {
+      try {
+        const cameraPermission = await navigator.permissions.query({name: 'camera'});
+        const micPermission = await navigator.permissions.query({name: 'microphone'});
+        
+        info += `<br><br><strong>🔒 权限状态:</strong>`;
+        info += `<br>摄像头: ${cameraPermission.state}`;
+        info += `<br>麦克风: ${micPermission.state}`;
+      } catch (e) {
+        info += `<br><br><strong>🔒 权限API不可用</strong>`;
+      }
+    }
+    
+    resultDiv.innerHTML = info;
+    resultDiv.className = 'result success';
+    
+  } catch (error) {
+    resultDiv.innerHTML = `❌ 信息收集失败: ${error.message}`;
+    resultDiv.className = 'result error';
+  }
+}
+
+// 页面卸载时清理资源
+window.addEventListener('beforeunload', () => {
+  if (mediaStream) {
+    mediaStream.getTracks().forEach(track => track.stop());
+  }
+});
+
+// 自动开始基础测试
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    collectPermissionInfo();
+  }, 1000);
+});
 </script>
+
 </body>
 </html>
-
