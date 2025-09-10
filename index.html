@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie管理和页面控制</title>
+    <title>Window对象属性查看器</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
+            font-family: 'Courier New', monospace;
+            max-width: 1200px;
+            margin: 20px auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
+            line-height: 1.6;
         }
         
         .container {
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
         }
         
         .btn {
@@ -27,7 +34,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
         }
         
         .btn-primary {
@@ -39,15 +46,6 @@
             background-color: #0056b3;
         }
         
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-        
         .btn-success {
             background-color: #28a745;
             color: white;
@@ -57,15 +55,96 @@
             background-color: #218838;
         }
         
-        #cookieDisplay {
-            margin-top: 20px;
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
             padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        #output {
+            margin-top: 20px;
+            padding: 20px;
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
             border-radius: 5px;
-            min-height: 50px;
+            max-height: 500px;
+            overflow-y: auto;
             white-space: pre-wrap;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .filter-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .key-item {
+            margin: 5px 0;
+            padding: 8px;
+            background-color: #fff;
+            border-left: 4px solid #007bff;
+            border-radius: 3px;
+        }
+        
+        .key-name {
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .key-type {
+            color: #666;
+            font-style: italic;
+            margin-left: 10px;
+        }
+        
+        .key-value {
+            color: #333;
+            margin-left: 10px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .hidden {
@@ -75,104 +154,294 @@
 </head>
 <body>
     <div class="container">
-        <h1>页面Cookie管理</h1>
+        <h1>🪟 Window对象属性查看器</h1>
         
-        <!-- 按钮组 -->
-        <div class="button-group">
-            <button class="btn btn-primary" onclick="showCookies()">
-                📋 显示当前页面Cookie
+        <!-- 操作按钮 -->
+        <div class="button-group" style="text-align: center;">
+            <button class="btn btn-primary" onclick="showAllKeys()">
+                📋 显示所有属性
             </button>
-            
-            <button class="btn btn-success" onclick="setCookies()">
-                ➕ 设置示例Cookie
+            <button class="btn btn-success" onclick="showFunctions()">
+                🔧 只显示函数
             </button>
-            
-            <button class="btn btn-danger" onclick="closePage()">
-                ❌ 关闭页面
+            <button class="btn btn-warning" onclick="showObjects()">
+                📦 只显示对象
+            </button>
+            <button class="btn btn-info" onclick="searchProperties()">
+                🔍 搜索属性
             </button>
         </div>
         
-        <!-- Cookie显示区域 -->
-        <div id="cookieDisplay" class="hidden"></div>
+        <!-- 统计信息 -->
+        <div class="stats hidden" id="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label">总属性数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="functionCount">0</div>
+                <div class="stat-label">函数数量</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="objectCount">0</div>
+                <div class="stat-label">对象数量</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="primitiveCount">0</div>
+                <div class="stat-label">基础类型</div>
+            </div>
+        </div>
+        
+        <!-- 搜索框 -->
+        <input type="text" class="filter-input hidden" id="searchInput" 
+               placeholder="输入要搜索的属性名..." 
+               onkeyup="filterResults(this.value)">
+        
+        <!-- 输出区域 -->
+        <div id="output"></div>
     </div>
 
     <script>
-        // 显示当前页面的所有cookie
-        function showCookies() {
-            const cookieDisplay = document.getElementById('cookieDisplay');
-            const cookies = document.cookie;
-            
-            if (cookies) {
-                // 格式化cookie显示
-                const cookieArray = cookies.split(';');
-                let formattedCookies = '当前页面的Cookie信息：\n\n';
-                
-                cookieArray.forEach((cookie, index) => {
-                    const [name, value] = cookie.trim().split('=');
-                    formattedCookies += `${index + 1}. ${name} = ${value || '(空值)'}\n`;
-                });
-                
-                cookieDisplay.textContent = formattedCookies;
-            } else {
-                cookieDisplay.textContent = '当前页面没有设置任何Cookie';
-            }
-            
-            // 显示cookie区域
-            cookieDisplay.classList.remove('hidden');
-        }
+        let allWindowKeys = [];
+        let currentDisplayData = [];
         
-        // 设置一些示例cookie（用于测试）
-        function setCookies() {
-            const now = new Date();
-            const expires = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24小时后过期
+        // 获取window对象的所有属性
+        function getAllWindowKeys() {
+            const keys = [];
+            const seenKeys = new Set();
             
-            // 设置几个示例cookie
-            document.cookie = `username=testuser; expires=${expires.toUTCString()}; path=/`;
-            document.cookie = `theme=dark; expires=${expires.toUTCString()}; path=/`;
-            document.cookie = `language=zh-CN; expires=${expires.toUTCString()}; path=/`;
-            document.cookie = `visitTime=${now.toISOString()}; expires=${expires.toUTCString()}; path=/`;
-            
-            alert('已设置示例Cookie，点击"显示Cookie"查看效果');
-        }
-        
-        // 关闭页面的函数
-        function closePage() {
-            // 显示确认对话框
-            const confirmClose = confirm('确定要关闭这个页面吗？');
-            
-            if (confirmClose) {
-                // 触发beforeunload事件（如果有设置的话）
-                window.onbeforeunload = function() {
-                    return '您确定要离开此页面吗？';
-                };
-                
-                // 尝试关闭窗口
-                try {
-                    // 如果是通过脚本打开的窗口，可以直接关闭
-                    window.close();
-                } catch (e) {
-                    // 如果无法直接关闭，给用户提示
-                    alert('无法直接关闭页面，请手动关闭浏览器标签页');
+            // 获取window对象自身的属性
+            for (let key in window) {
+                if (!seenKeys.has(key)) {
+                    seenKeys.add(key);
+                    try {
+                        const value = window[key];
+                        const type = typeof value;
+                        keys.push({
+                            name: key,
+                            type: type,
+                            value: value,
+                            toString: getValueString(value, type)
+                        });
+                    } catch (e) {
+                        keys.push({
+                            name: key,
+                            type: 'error',
+                            value: null,
+                            toString: '[无法访问]'
+                        });
+                    }
                 }
-                
-                // 备选方案：跳转到空白页或其他页面
-                // window.location.href = 'about:blank';
+            }
+            
+            // 获取Object.getOwnPropertyNames
+            try {
+                const ownProps = Object.getOwnPropertyNames(window);
+                ownProps.forEach(prop => {
+                    if (!seenKeys.has(prop)) {
+                        seenKeys.add(prop);
+                        try {
+                            const value = window[prop];
+                            const type = typeof value;
+                            keys.push({
+                                name: prop,
+                                type: type,
+                                value: value,
+                                toString: getValueString(value, type)
+                            });
+                        } catch (e) {
+                            keys.push({
+                                name: prop,
+                                type: 'error',
+                                value: null,
+                                toString: '[无法访问]'
+                            });
+                        }
+                    }
+                });
+            } catch (e) {
+                console.warn('无法获取Object.getOwnPropertyNames:', e);
+            }
+            
+            return keys.sort((a, b) => a.name.localeCompare(b.name));
+        }
+        
+        // 格式化值的字符串表示
+        function getValueString(value, type) {
+            try {
+                switch (type) {
+                    case 'function':
+                        return `[Function: ${value.name || 'anonymous'}]`;
+                    case 'object':
+                        if (value === null) return 'null';
+                        if (Array.isArray(value)) return `[Array: length ${value.length}]`;
+                        if (value.constructor) return `[Object: ${value.constructor.name}]`;
+                        return '[Object]';
+                    case 'string':
+                        return value.length > 50 ? `"${value.substring(0, 50)}..."` : `"${value}"`;
+                    case 'number':
+                    case 'boolean':
+                        return String(value);
+                    case 'undefined':
+                        return 'undefined';
+                    default:
+                        return String(value).substring(0, 50);
+                }
+            } catch (e) {
+                return '[无法转换为字符串]';
             }
         }
         
-        // 页面加载时的初始化
-        window.onload = function() {
-            console.log('页面已加载完成');
+        // 显示统计信息
+        function updateStats(keys) {
+            const total = keys.length;
+            const functions = keys.filter(k => k.type === 'function').length;
+            const objects = keys.filter(k => k.type === 'object' && k.value !== null).length;
+            const primitives = keys.filter(k => ['string', 'number', 'boolean', 'undefined'].includes(k.type)).length;
             
-            // 可以在这里设置一些默认行为
-            // 比如自动显示cookie信息
-            // showCookies();
-        };
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('functionCount').textContent = functions;
+            document.getElementById('objectCount').textContent = objects;
+            document.getElementById('primitiveCount').textContent = primitives;
+            document.getElementById('stats').classList.remove('hidden');
+        }
         
-        // 设置beforeunload事件处理（可选）
-        window.onbeforeunload = function(e) {
-            // 这会触发你之前看到的 onJsBeforeUnload 方法
-            return '您确定要离开此页面吗？未保存的更改可能会丢失。';
+        // 显示所有属性
+        function showAllKeys() {
+            allWindowKeys = getAllWindowKeys();
+            currentDisplayData = allWindowKeys;
+            
+            const output = document.getElementById('output');
+            let html = `<h3>Window对象的所有属性 (共 ${allWindowKeys.length} 个):</h3>\n\n`;
+            
+            allWindowKeys.forEach((item, index) => {
+                html += `<div class="key-item">
+                    <span class="key-name">${index + 1}. ${item.name}</span>
+                    <span class="key-type">[${item.type}]</span>
+                    <span class="key-value">${item.toString}</span>
+                </div>`;
+            });
+            
+            output.innerHTML = html;
+            updateStats(allWindowKeys);
+            showSearchInput();
+        }
+        
+        // 只显示函数
+        function showFunctions() {
+            if (allWindowKeys.length === 0) {
+                allWindowKeys = getAllWindowKeys();
+            }
+            
+            const functions = allWindowKeys.filter(item => item.type === 'function');
+            currentDisplayData = functions;
+            
+            const output = document.getElementById('output');
+            let html = `<h3>Window对象的函数属性 (共 ${functions.length} 个):</h3>\n\n`;
+            
+            functions.forEach((item, index) => {
+                html += `<div class="key-item">
+                    <span class="key-name">${index + 1}. ${item.name}</span>
+                    <span class="key-type">[${item.type}]</span>
+                    <span class="key-value">${item.toString}</span>
+                </div>`;
+            });
+            
+            output.innerHTML = html;
+            updateStats(allWindowKeys);
+            showSearchInput();
+        }
+        
+        // 只显示对象
+        function showObjects() {
+            if (allWindowKeys.length === 0) {
+                allWindowKeys = getAllWindowKeys();
+            }
+            
+            const objects = allWindowKeys.filter(item => item.type === 'object' && item.value !== null);
+            currentDisplayData = objects;
+            
+            const output = document.getElementById('output');
+            let html = `<h3>Window对象的对象属性 (共 ${objects.length} 个):</h3>\n\n`;
+            
+            objects.forEach((item, index) => {
+                html += `<div class="key-item">
+                    <span class="key-name">${index + 1}. ${item.name}</span>
+                    <span class="key-type">[${item.type}]</span>
+                    <span class="key-value">${item.toString}</span>
+                </div>`;
+            });
+            
+            output.innerHTML = html;
+            updateStats(allWindowKeys);
+            showSearchInput();
+        }
+        
+        // 搜索属性
+        function searchProperties() {
+            if (allWindowKeys.length === 0) {
+                allWindowKeys = getAllWindowKeys();
+            }
+            
+            document.getElementById('searchInput').classList.remove('hidden');
+            document.getElementById('searchInput').focus();
+            showAllKeys();
+        }
+        
+        // 显示搜索框
+        function showSearchInput() {
+            document.getElementById('searchInput').classList.remove('hidden');
+        }
+        
+        // 过滤结果
+        function filterResults(searchTerm) {
+            if (!searchTerm.trim()) {
+                showFilteredResults(currentDisplayData);
+                return;
+            }
+            
+            const filtered = currentDisplayData.filter(item => 
+                item.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            showFilteredResults(filtered, searchTerm);
+        }
+        
+        // 显示过滤后的结果
+        function showFilteredResults(items, searchTerm = '') {
+            const output = document.getElementById('output');
+            const title = searchTerm ? 
+                `搜索结果 "${searchTerm}" (${items.length} 个匹配项):` : 
+                `显示结果 (${items.length} 个项目):`;
+            
+            let html = `<h3>${title}</h3>\n\n`;
+            
+            if (items.length === 0) {
+                html += '<p style="color: #666; text-align: center;">没有找到匹配的属性</p>';
+            } else {
+                items.forEach((item, index) => {
+                    const highlightedName = searchTerm ? 
+                        item.name.replace(new RegExp(searchTerm, 'gi'), `<mark>$&</mark>`) : 
+                        item.name;
+                    
+                    html += `<div class="key-item">
+                        <span class="key-name">${index + 1}. ${highlightedName}</span>
+                        <span class="key-type">[${item.type}]</span>
+                        <span class="key-value">${item.toString}</span>
+                    </div>`;
+                });
+            }
+            
+            output.innerHTML = html;
+        }
+        
+        // 页面加载完成后的初始化
+        window.onload = function() {
+            console.log('Window对象属性查看器已加载');
+            console.log('点击按钮开始查看Window对象的属性');
+            
+            // 在控制台也输出一份简单版本
+            console.log('Window对象的所有属性名:', Object.getOwnPropertyNames(window));
         };
     </script>
 </body>
