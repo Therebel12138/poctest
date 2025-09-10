@@ -1,773 +1,179 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JSBridge 接口检测工具</title>
-<style>
-  body {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background: #f5f5f5;
-    line-height: 1.6;
-  }
-  .header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  .section {
-    background: white;
-    border: 1px solid #ddd;
-    margin: 15px 0;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  .section-header {
-    background: #f8f9fa;
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
-    font-weight: bold;
-    border-radius: 8px 8px 0 0;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .section-content {
-    padding: 15px;
-    max-height: 400px;
-    overflow-y: auto;
-  }
-  .collapsed .section-content {
-    display: none;
-  }
-  .interface-item {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 5px;
-    margin: 10px 0;
-    padding: 15px;
-  }
-  .interface-name {
-    font-weight: bold;
-    color: #2c3e50;
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-  .method-list {
-    margin-left: 20px;
-  }
-  .method-item {
-    background: white;
-    border-left: 3px solid #3498db;
-    padding: 8px 12px;
-    margin: 5px 0;
-    border-radius: 3px;
-  }
-  .method-name {
-    font-weight: bold;
-    color: #e74c3c;
-  }
-  .method-type {
-    color: #27ae60;
-    font-size: 12px;
-    background: #ecf0f1;
-    padding: 2px 6px;
-    border-radius: 3px;
-    margin-left: 10px;
-  }
-  .test-btn {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-left: 10px;
-  }
-  .test-btn:hover {
-    background: #2980b9;
-  }
-  .controls {
-    text-align: center;
-    margin: 20px 0;
-  }
-  .control-btn {
-    background: #2ecc71;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 5px;
-    font-size: 14px;
-  }
-  .control-btn:hover {
-    background: #27ae60;
-  }
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin: 20px 0;
-  }
-  .stat-card {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    border: 1px solid #ddd;
-  }
-  .stat-number {
-    font-size: 2em;
-    font-weight: bold;
-    color: #3498db;
-  }
-  .stat-label {
-    color: #7f8c8d;
-    margin-top: 5px;
-  }
-  .console-output {
-    background: #2c3e50;
-    color: #ecf0f1;
-    padding: 15px;
-    border-radius: 5px;
-    font-family: monospace;
-    max-height: 300px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    margin: 15px 0;
-  }
-  .search-box {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    font-size: 14px;
-  }
-  .highlight {
-    background-color: yellow;
-    padding: 2px 4px;
-    border-radius: 2px;
-  }
-  .toggle-arrow {
-    transition: transform 0.3s ease;
-  }
-  .collapsed .toggle-arrow {
-    transform: rotate(-90deg);
-  }
-  .loading {
-    text-align: center;
-    padding: 20px;
-    color: #7f8c8d;
-  }
-  .warning {
-    background: #fff3cd;
-    border: 1px solid #ffeaa7;
-    color: #856404;
-    padding: 15px;
-    border-radius: 5px;
-    margin: 15px 0;
-  }
-  .export-btn {
-    background: #e67e22;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 3px;
-    cursor: pointer;
-    margin-left: 10px;
-  }
-  .copy-btn {
-    background: #9b59b6;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-left: 5px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie管理和页面控制</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        #cookieDisplay {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            min-height: 50px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>🔍 JSBridge 接口检测工具</h1>
-  <p>自动检测并显示 Android WebView 中注入的所有 JavaScript 接口</p>
-</div>
-
-<div class="warning">
-  ⚠️ <strong>安全提醒:</strong> 此工具用于安全测试和调试目的。发现的接口可能包含敏感功能，请谨慎测试。
-</div>
-
-<div class="controls">
-  <button class="control-btn" onclick="startDetection()">🔍 开始检测</button>
-  <button class="control-btn" onclick="refreshDetection()">🔄 刷新检测</button>
-  <button class="control-btn" onclick="clearConsole()">🗑️ 清空日志</button>
-  <button class="export-btn" onclick="exportResults()">📤 导出结果</button>
-  <button class="control-btn" onclick="toggleAll()">📁 折叠/展开全部</button>
-</div>
-
-<div class="stats" id="stats">
-  <div class="stat-card">
-    <div class="stat-number" id="total-interfaces">0</div>
-    <div class="stat-label">发现的接口</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number" id="total-methods">0</div>
-    <div class="stat-label">可用方法</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number" id="testable-methods">0</div>
-    <div class="stat-label">可测试方法</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-number" id="detection-time">0ms</div>
-    <div class="stat-label">检测耗时</div>
-  </div>
-</div>
-
-<input type="text" class="search-box" id="searchBox" placeholder="🔍 搜索接口或方法名..." onkeyup="filterInterfaces()">
-
-<div class="console-output" id="console">
-等待开始检测...\n点击"开始检测"按钮来扫描可用的 JSBridge 接口
-</div>
-
-<div id="interfaces-container">
-  <!-- 动态生成的接口列表将显示在这里 -->
-</div>
-
-<script>
-let detectedInterfaces = {};
-let consoleLog = [];
-let allCollapsed = false;
-
-// 日志输出函数
-function log(message, type = 'info') {
-  const timestamp = new Date().toLocaleTimeString();
-  const logEntry = `[${timestamp}] ${message}`;
-  consoleLog.push(logEntry);
-  
-  const console = document.getElementById('console');
-  console.textContent = consoleLog.join('\n');
-  console.scrollTop = console.scrollHeight;
-}
-
-// 清空控制台
-function clearConsole() {
-  consoleLog = [];
-  document.getElementById('console').textContent = '控制台已清空';
-}
-
-// 检测 JSBridge 接口
-function startDetection() {
-  const startTime = performance.now();
-  log('🔍 开始检测 JSBridge 接口...');
-  
-  detectedInterfaces = {};
-  let totalMethods = 0;
-  let testableMethods = 0;
-  
-  try {
-    // 检测 window 对象上的自定义属性
-    const windowProps = Object.getOwnPropertyNames(window);
-    log(`📋 检测到 window 对象上有 ${windowProps.length} 个属性`);
-    
-    // 常见的 JSBridge 接口名称模式
-    const bridgePatterns = [
-      /^Android/i,
-      /^app/i,
-      /^bridge/i,
-      /^native/i,
-      /^webkit/i,
-      /^js/i,
-      /^mobile/i,
-      /^device/i,
-      /^api/i,
-      /^sdk/i,
-      /^plugin/i,
-      /^client/i,
-      /^host/i,
-      /^container/i
-    ];
-    
-    // 检查每个属性
-    windowProps.forEach(prop => {
-      try {
-        const obj = window[prop];
+    <div class="container">
+        <h1>页面Cookie管理</h1>
         
-        // 跳过原生 DOM 和浏览器 API
-        if (isNativeProperty(prop)) {
-          return;
-        }
+        <!-- 按钮组 -->
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="showCookies()">
+                📋 显示当前页面Cookie
+            </button>
+            
+            <button class="btn btn-success" onclick="setCookies()">
+                ➕ 设置示例Cookie
+            </button>
+            
+            <button class="btn btn-danger" onclick="closePage()">
+                ❌ 关闭页面
+            </button>
+        </div>
         
-        // 检查是否为对象且可能是 JSBridge
-        if (obj && typeof obj === 'object' && obj !== window) {
-          const isBridge = bridgePatterns.some(pattern => pattern.test(prop)) || 
-                          hasJSBridgeMethods(obj);
-          
-          if (isBridge) {
-            log(`🎯 发现疑似 JSBridge 接口: ${prop}`);
-            detectedInterfaces[prop] = analyzeInterface(obj, prop);
-            totalMethods += Object.keys(detectedInterfaces[prop].methods).length;
-            testableMethods += detectedInterfaces[prop].testableMethods;
-          }
-        }
-        
-        // 检查函数类型的接口
-        if (typeof obj === 'function' && !isNativeFunction(obj)) {
-          const isBridge = bridgePatterns.some(pattern => pattern.test(prop));
-          if (isBridge) {
-            log(`🔧 发现函数类型接口: ${prop}`);
-            detectedInterfaces[prop] = {
-              type: 'function',
-              methods: { [prop]: { type: 'function', testable: true } },
-              testableMethods: 1
-            };
-            totalMethods += 1;
-            testableMethods += 1;
-          }
-        }
-        
-      } catch (error) {
-        // 忽略访问错误的属性
-      }
-    });
-    
-    // 特殊检测：查找隐藏的接口
-    detectHiddenInterfaces();
-    
-    const endTime = performance.now();
-    const detectionTime = Math.round(endTime - startTime);
-    
-    log(`✅ 检测完成！发现 ${Object.keys(detectedInterfaces).length} 个接口，${totalMethods} 个方法`);
-    
-    // 更新统计信息
-    updateStats(Object.keys(detectedInterfaces).length, totalMethods, testableMethods, detectionTime);
-    
-    // 渲染接口列表
-    renderInterfaces();
-    
-  } catch (error) {
-    log(`❌ 检测过程中出现错误: ${error.message}`);
-  }
-}
-
-// 判断是否为原生属性
-function isNativeProperty(prop) {
-  const nativeProps = [
-    'window', 'document', 'navigator', 'location', 'history', 'screen',
-    'console', 'setTimeout', 'setInterval', 'clearTimeout', 'clearInterval',
-    'XMLHttpRequest', 'fetch', 'Promise', 'Array', 'Object', 'String',
-    'Number', 'Boolean', 'Date', 'RegExp', 'Error', 'JSON', 'Math',
-    'parseInt', 'parseFloat', 'isNaN', 'isFinite', 'encodeURIComponent',
-    'decodeURIComponent', 'alert', 'confirm', 'prompt', 'open', 'close',
-    'localStorage', 'sessionStorage', 'indexedDB', 'crypto', 'performance'
-  ];
-  
-  return nativeProps.includes(prop) || 
-         prop.startsWith('webkit') && !prop.includes('Bridge') ||
-         prop.startsWith('moz') || 
-         prop.startsWith('ms') || 
-         prop.startsWith('o') && prop.length < 4;
-}
-
-// 判断是否为原生函数
-function isNativeFunction(func) {
-  return func.toString().includes('[native code]');
-}
-
-// 检查对象是否包含 JSBridge 方法
-function hasJSBridgeMethods(obj) {
-  try {
-    const methods = Object.getOwnPropertyNames(obj);
-    const bridgeMethods = methods.filter(method => 
-      typeof obj[method] === 'function' && 
-      !isNativeFunction(obj[method])
-    );
-    return bridgeMethods.length > 0;
-  } catch (error) {
-    return false;
-  }
-}
-
-// 分析接口详情
-function analyzeInterface(obj, interfaceName) {
-  const analysis = {
-    type: 'object',
-    methods: {},
-    properties: {},
-    testableMethods: 0
-  };
-  
-  try {
-    const props = Object.getOwnPropertyNames(obj);
-    
-    props.forEach(prop => {
-      try {
-        const value = obj[prop];
-        
-        if (typeof value === 'function') {
-          const funcStr = value.toString();
-          const isTestable = !isNativeFunction(value);
-          
-          analysis.methods[prop] = {
-            type: 'function',
-            testable: isTestable,
-            parameters: extractParameters(funcStr),
-            source: funcStr.length > 200 ? funcStr.substring(0, 200) + '...' : funcStr
-          };
-          
-          if (isTestable) {
-            analysis.testableMethods++;
-          }
-          
-        } else {
-          analysis.properties[prop] = {
-            type: typeof value,
-            value: typeof value === 'object' ? '[Object]' : String(value)
-          };
-        }
-      } catch (error) {
-        analysis.properties[prop] = {
-          type: 'unknown',
-          value: '[访问受限]',
-          error: error.message
-        };
-      }
-    });
-    
-  } catch (error) {
-    log(`⚠️ 分析接口 ${interfaceName} 时出错: ${error.message}`);
-  }
-  
-  return analysis;
-}
-
-// 提取函数参数
-function extractParameters(funcStr) {
-  try {
-    const match = funcStr.match(/\(([^)]*)\)/);
-    if (match && match[1]) {
-      return match[1].split(',').map(param => param.trim()).filter(p => p);
-    }
-  } catch (error) {
-    // 忽略解析错误
-  }
-  return [];
-}
-
-// 检测隐藏的接口
-function detectHiddenInterfaces() {
-  log('🔍 检测隐藏接口...');
-  
-  // 常见的隐藏接口名称
-  const hiddenNames = [
-    'AndroidInterface', 'NativeInterface', 'AppInterface', 'MobileInterface',
-    'JSBridge', 'WebViewBridge', 'HybridBridge', 'ClientBridge',
-    'nativeAPI', 'appAPI', 'mobileAPI', 'deviceAPI',
-    'webkit', 'chrome', 'safari', 'firefox'
-  ];
-  
-  hiddenNames.forEach(name => {
-    try {
-      if (window[name] && !detectedInterfaces[name]) {
-        log(`🔍 发现隐藏接口: ${name}`);
-        detectedInterfaces[name] = analyzeInterface(window[name], name);
-      }
-    } catch (error) {
-      // 忽略错误
-    }
-  });
-  
-  // 检测通过 eval 或其他方式注入的接口
-  try {
-    const globalVars = Object.keys(window).filter(key => 
-      !isNativeProperty(key) && 
-      window[key] && 
-      typeof window[key] === 'object' &&
-      !detectedInterfaces[key]
-    );
-    
-    globalVars.forEach(varName => {
-      if (hasJSBridgeMethods(window[varName])) {
-        log(`🎯 发现全局对象接口: ${varName}`);
-        detectedInterfaces[varName] = analyzeInterface(window[varName], varName);
-      }
-    });
-    
-  } catch (error) {
-    log(`⚠️ 检测隐藏接口时出错: ${error.message}`);
-  }
-}
-
-// 更新统计信息
-function updateStats(interfaces, methods, testable, time) {
-  document.getElementById('total-interfaces').textContent = interfaces;
-  document.getElementById('total-methods').textContent = methods;
-  document.getElementById('testable-methods').textContent = testable;
-  document.getElementById('detection-time').textContent = time + 'ms';
-}
-
-// 渲染接口列表
-function renderInterfaces() {
-  const container = document.getElementById('interfaces-container');
-  container.innerHTML = '';
-  
-  if (Object.keys(detectedInterfaces).length === 0) {
-    container.innerHTML = `
-      <div class="loading">
-        <h3>😔 未发现 JSBridge 接口</h3>
-        <p>可能的原因：</p>
-        <ul style="text-align: left; max-width: 500px; margin: 0 auto;">
-          <li>当前环境不是 Android WebView</li>
-          <li>应用未注入 JavaScript 接口</li>
-          <li>接口使用了特殊的命名规则</li>
-          <li>接口被混淆或加密</li>
-        </ul>
-      </div>
-    `;
-    return;
-  }
-  
-  Object.entries(detectedInterfaces).forEach(([interfaceName, interfaceData]) => {
-    const section = createInterfaceSection(interfaceName, interfaceData);
-    container.appendChild(section);
-  });
-}
-
-// 创建接口区域
-function createInterfaceSection(interfaceName, interfaceData) {
-  const section = document.createElement('div');
-  section.className = 'section';
-  section.id = `interface-${interfaceName}`;
-  
-  const header = document.createElement('div');
-  header.className = 'section-header';
-  header.onclick = () => toggleSection(interfaceName);
-  
-  const methodCount = Object.keys(interfaceData.methods || {}).length;
-  const propCount = Object.keys(interfaceData.properties || {}).length;
-  
-  header.innerHTML = `
-    <span>🔌 ${interfaceName} (${methodCount} 方法, ${propCount} 属性)</span>
-    <span class="toggle-arrow">▼</span>
-  `;
-  
-  const content = document.createElement('div');
-  content.className = 'section-content';
-  
-  // 渲染方法
-  if (methodCount > 0) {
-    content.innerHTML += '<h4>📋 可用方法:</h4>';
-    Object.entries(interfaceData.methods).forEach(([methodName, methodInfo]) => {
-      content.appendChild(createMethodItem(interfaceName, methodName, methodInfo));
-    });
-  }
-  
-  // 渲染属性
-  if (propCount > 0) {
-    content.innerHTML += '<h4>🔧 属性:</h4>';
-    Object.entries(interfaceData.properties).forEach(([propName, propInfo]) => {
-      content.appendChild(createPropertyItem(propName, propInfo));
-    });
-  }
-  
-  section.appendChild(header);
-  section.appendChild(content);
-  
-  return section;
-}
-
-// 创建方法项
-function createMethodItem(interfaceName, methodName, methodInfo) {
-  const item = document.createElement('div');
-  item.className = 'method-item';
-  
-  const params = methodInfo.parameters ? methodInfo.parameters.join(', ') : '';
-  const testable = methodInfo.testable ? '可测试' : '原生方法';
-  
-  item.innerHTML = `
-    <span class="method-name">${methodName}(${params})</span>
-    <span class="method-type">${testable}</span>
-    ${methodInfo.testable ? `<button class="test-btn" onclick="testMethod('${interfaceName}', '${methodName}')">测试</button>` : ''}
-    <button class="copy-btn" onclick="copyMethodInfo('${interfaceName}', '${methodName}')">复制</button>
-  `;
-  
-  if (methodInfo.source) {
-    const sourceDiv = document.createElement('div');
-    sourceDiv.style.cssText = 'margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 3px; font-family: monospace; font-size: 12px; white-space: pre-wrap; overflow-x: auto;';
-    sourceDiv.textContent = methodInfo.source;
-    item.appendChild(sourceDiv);
-  }
-  
-  return item;
-}
-
-// 创建属性项
-function createPropertyItem(propName, propInfo) {
-  const item = document.createElement('div');
-  item.className = 'method-item';
-  item.style.borderLeftColor = '#e67e22';
-  
-  item.innerHTML = `
-    <span class="method-name">${propName}</span>
-    <span class="method-type">${propInfo.type}</span>
-    <button class="copy-btn" onclick="copyPropertyInfo('${propName}')">复制</button>
-    <div style="margin-top: 5px; color: #7f8c8d; font-size: 12px;">
-      值: ${propInfo.value}
-      ${propInfo.error ? `<br>错误: ${propInfo.error}` : ''}
+        <!-- Cookie显示区域 -->
+        <div id="cookieDisplay" class="hidden"></div>
     </div>
-  `;
-  
-  return item;
-}
 
-// 测试方法
-function testMethod(interfaceName, methodName) {
-  try {
-    log(`🧪 测试方法: ${interfaceName}.${methodName}()`);
-    
-    const result = window[interfaceName][methodName]();
-    log(`✅ 方法调用成功，返回值: ${JSON.stringify(result)}`);
-    
-  } catch (error) {
-    log(`❌ 方法调用失败: ${error.message}`);
-  }
-}
-
-// 复制方法信息
-function copyMethodInfo(interfaceName, methodName) {
-  const methodInfo = detectedInterfaces[interfaceName].methods[methodName];
-  const info = `接口: ${interfaceName}\n方法: ${methodName}\n参数: ${methodInfo.parameters?.join(', ') || '无'}\n源码: ${methodInfo.source || '不可用'}`;
-  
-  navigator.clipboard.writeText(info).then(() => {
-    log(`📋 已复制方法信息: ${interfaceName}.${methodName}`);
-  });
-}
-
-// 复制属性信息
-function copyPropertyInfo(propName) {
-  navigator.clipboard.writeText(`属性: ${propName}`).then(() => {
-    log(`📋 已复制属性信息: ${propName}`);
-  });
-}
-
-// 切换区域折叠状态
-function toggleSection(interfaceName) {
-  const section = document.getElementById(`interface-${interfaceName}`);
-  section.classList.toggle('collapsed');
-}
-
-// 切换全部折叠状态
-function toggleAll() {
-  allCollapsed = !allCollapsed;
-  const sections = document.querySelectorAll('.section');
-  sections.forEach(section => {
-    if (allCollapsed) {
-      section.classList.add('collapsed');
-    } else {
-      section.classList.remove('collapsed');
-    }
-  });
-}
-
-// 过滤接口
-function filterInterfaces() {
-  const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-  const sections = document.querySelectorAll('.section');
-  
-  sections.forEach(section => {
-    const text = section.textContent.toLowerCase();
-    if (text.includes(searchTerm)) {
-      section.style.display = 'block';
-      highlightSearchTerm(section, searchTerm);
-    } else {
-      section.style.display = 'none';
-    }
-  });
-}
-
-// 高亮搜索词
-function highlightSearchTerm(element, term) {
-  if (!term) return;
-  
-  const walker = document.createTreeWalker(
-    element,
-    NodeFilter.SHOW_TEXT,
-    null,
-    false
-  );
-  
-  const textNodes = [];
-  let node;
-  while (node = walker.nextNode()) {
-    textNodes.push(node);
-  }
-  
-  textNodes.forEach(textNode => {
-    const text = textNode.textContent;
-    if (text.toLowerCase().includes(term)) {
-      const regex = new RegExp(`(${term})`, 'gi');
-      const highlightedText = text.replace(regex, '<span class="highlight">$1</span>');
-      const wrapper = document.createElement('span');
-      wrapper.innerHTML = highlightedText;
-      textNode.parentNode.replaceChild(wrapper, textNode);
-    }
-  });
-}
-
-// 刷新检测
-function refreshDetection() {
-  document.getElementById('interfaces-container').innerHTML = '';
-  updateStats(0, 0, 0, 0);
-  clearConsole();
-  startDetection();
-}
-
-// 导出结果
-function exportResults() {
-  const results = {
-    timestamp: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-    url: window.location.href,
-    totalInterfaces: Object.keys(detectedInterfaces).length,
-    interfaces: detectedInterfaces,
-    logs: consoleLog
-  };
-  
-  const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `jsbridge-analysis-${Date.now()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  
-  log('📤 分析结果已导出');
-}
-
-// 页面加载完成后自动开始检测
-window.addEventListener('load', () => {
-  log('🚀 JSBridge 接口检测工具已启动');
-  setTimeout(startDetection, 1000);
-});
-
-// 监听页面错误
-window.addEventListener('error', (event) => {
-  log(`❌ 页面错误: ${event.error.message}`);
-});
-
-</script>
-
+    <script>
+        // 显示当前页面的所有cookie
+        function showCookies() {
+            const cookieDisplay = document.getElementById('cookieDisplay');
+            const cookies = document.cookie;
+            
+            if (cookies) {
+                // 格式化cookie显示
+                const cookieArray = cookies.split(';');
+                let formattedCookies = '当前页面的Cookie信息：\n\n';
+                
+                cookieArray.forEach((cookie, index) => {
+                    const [name, value] = cookie.trim().split('=');
+                    formattedCookies += `${index + 1}. ${name} = ${value || '(空值)'}\n`;
+                });
+                
+                cookieDisplay.textContent = formattedCookies;
+            } else {
+                cookieDisplay.textContent = '当前页面没有设置任何Cookie';
+            }
+            
+            // 显示cookie区域
+            cookieDisplay.classList.remove('hidden');
+        }
+        
+        // 设置一些示例cookie（用于测试）
+        function setCookies() {
+            const now = new Date();
+            const expires = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24小时后过期
+            
+            // 设置几个示例cookie
+            document.cookie = `username=testuser; expires=${expires.toUTCString()}; path=/`;
+            document.cookie = `theme=dark; expires=${expires.toUTCString()}; path=/`;
+            document.cookie = `language=zh-CN; expires=${expires.toUTCString()}; path=/`;
+            document.cookie = `visitTime=${now.toISOString()}; expires=${expires.toUTCString()}; path=/`;
+            
+            alert('已设置示例Cookie，点击"显示Cookie"查看效果');
+        }
+        
+        // 关闭页面的函数
+        function closePage() {
+            // 显示确认对话框
+            const confirmClose = confirm('确定要关闭这个页面吗？');
+            
+            if (confirmClose) {
+                // 触发beforeunload事件（如果有设置的话）
+                window.onbeforeunload = function() {
+                    return '您确定要离开此页面吗？';
+                };
+                
+                // 尝试关闭窗口
+                try {
+                    // 如果是通过脚本打开的窗口，可以直接关闭
+                    window.close();
+                } catch (e) {
+                    // 如果无法直接关闭，给用户提示
+                    alert('无法直接关闭页面，请手动关闭浏览器标签页');
+                }
+                
+                // 备选方案：跳转到空白页或其他页面
+                // window.location.href = 'about:blank';
+            }
+        }
+        
+        // 页面加载时的初始化
+        window.onload = function() {
+            console.log('页面已加载完成');
+            
+            // 可以在这里设置一些默认行为
+            // 比如自动显示cookie信息
+            // showCookies();
+        };
+        
+        // 设置beforeunload事件处理（可选）
+        window.onbeforeunload = function(e) {
+            // 这会触发你之前看到的 onJsBeforeUnload 方法
+            return '您确定要离开此页面吗？未保存的更改可能会丢失。';
+        };
+    </script>
 </body>
 </html>
