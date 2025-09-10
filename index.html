@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在线拍照工具</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  video, canvas {
+    width: 100%;
+    max-width: 400px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  #photo {
+    width: 100%;
+    max-width: 400px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-top: 15px;
+  }
+  button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+  button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  .error {
+    color: red;
+    margin: 10px 0;
+  }
+</style>
+</head>
+<body>
+<h1>📸 在线拍照工具</h1>
+<p>点击下方按钮开始使用摄像头拍照</p>
+
+<div id="error-msg" class="error" style="display:none;"></div>
+
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas" style="display:none;"></canvas>
+
+<div>
+  <button id="start-camera">开启摄像头</button>
+  <button id="capture" disabled>📸 拍照</button>
+  <button id="download" style="display:none;">💾 下载照片</button>
+</div>
+
+<img id="photo" alt="拍摄的照片" style="display:none;">
+
+<script>
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const photo = document.getElementById('photo');
+  const startBtn = document.getElementById('start-camera');
+  const captureBtn = document.getElementById('capture');
+  const downloadBtn = document.getElementById('download');
+  const errorMsg = document.getElementById('error-msg');
+
+  let stream = null;
+
+  // 开启摄像头
+  startBtn.addEventListener('click', async () => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'user' } // 前置摄像头
+      });
+      video.srcObject = stream;
+      startBtn.disabled = true;
+      captureBtn.disabled = false;
+      errorMsg.style.display = 'none';
+    } catch (err) {
+      showError('无法访问摄像头，请确保已授权摄像头权限');
+      console.error('Camera error:', err);
+    }
+  });
+
+  // 拍照
+  captureBtn.addEventListener('click', () => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataURL = canvas.toDataURL('image/png');
+    photo.src = dataURL;
+    photo.style.display = 'block';
+    downloadBtn.style.display = 'inline-block';
+  });
+
+  // 下载照片
+  downloadBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = 'photo-' + new Date().getTime() + '.png';
+    link.href = photo.src;
+    link.click();
+  });
+
+  // 显示错误信息
+  function showError(message) {
+    errorMsg.textContent = message;
+    errorMsg.style.display = 'block';
+  }
+
+  // 页面关闭时停止摄像头
+  window.addEventListener('beforeunload', () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+  });
+</script>
+</body>
+</html>
+
