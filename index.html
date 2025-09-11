@@ -3,144 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie 查看器</title>
+    <title>Window对象属性查看器</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Courier New', monospace;
             margin: 20px;
             background-color: #f5f5f5;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .cookie-item {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        .cookie-name {
-            font-weight: bold;
-            color: #007bff;
-        }
-        .cookie-value {
-            color: #28a745;
-            word-break: break-all;
-        }
-        .no-cookies {
+        h1 {
+            color: #333;
             text-align: center;
-            color: #6c757d;
-            font-style: italic;
-            padding: 20px;
+            margin-bottom: 30px;
         }
-        button {
-            background: #007bff;
-            color: white;
+        .stats {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .search-box {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .search-box input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 8px 16px;
+            margin: 0 5px;
             border: none;
-            padding: 10px 20px;
             border-radius: 4px;
             cursor: pointer;
-            margin: 10px 5px;
+            font-size: 14px;
         }
-        button:hover {
-            background: #0056b3;
+        .btn-primary { background: #007bff; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .output {
+            border: 1px solid #ddd;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            max-height: 600px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .key-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .key-name {
+            color: #0066cc;
+            font-weight: bold;
+        }
+        .key-type {
+            color: #666;
+            font-style: italic;
+            margin-left: 10px;
+        }
+        .key-value {
+            color: #333;
+            margin-left: 10px;
+            max-width: 500px;
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .highlight {
+            background-color: yellow;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🍪 Cookie 查看器</h1>
-        <div>
-            <button onclick="displayCookies()">刷新Cookie</button>
-            <button onclick="setCookieExample()">设置示例Cookie</button>
-            <button onclick="clearAllCookies()">清除所有Cookie</button>
-        </div>
+        <h1>🔍 Window对象属性查看器</h1>
         
-        <h2>当前页面的 Cookies:</h2>
-        <div id="cookieContainer">
-            <!-- Cookie内容将在这里显示 -->
+        <div class="stats">
+            <span id="total-count">总属性数量: 0</span> | 
+            <span id="filtered-count">显示数量: 0</span>
         </div>
-        
-        <h2>原始 Cookie 字符串:</h2>
-        <textarea id="rawCookie" readonly style="width: 100%; height: 100px; font-family: monospace;"></textarea>
+
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="搜索属性名..." />
+        </div>
+
+        <div class="buttons">
+            <button class="btn btn-primary" onclick="showAllKeys()">显示所有属性</button>
+            <button class="btn btn-secondary" onclick="showFunctions()">只显示函数</button>
+            <button class="btn btn-success" onclick="showObjects()">只显示对象</button>
+            <button class="btn btn-secondary" onclick="showPrimitives()">只显示基础类型</button>
+            <button class="btn btn-primary" onclick="exportToJson()">导出JSON</button>
+        </div>
+
+        <div class="output" id="output"></div>
     </div>
 
     <script>
-        // 显示所有cookies
-        function displayCookies() {
-            const cookieContainer = document.getElementById('cookieContainer');
-            const rawCookieTextarea = document.getElementById('rawCookie');
+        let allWindowKeys = [];
+        let currentFilter = 'all';
+
+        // 获取所有window属性
+        function getAllWindowKeys() {
+            const keys = [];
+            const seen = new Set();
             
-            // 获取原始cookie字符串
-            const cookieString = document.cookie;
-            rawCookieTextarea.value = cookieString || '(没有Cookie)';
+            // 获取自有属性
+            try {
+                Object.getOwnPropertyNames(window).forEach(key => {
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        keys.push({
+                            name: key,
+                            type: getType(window[key]),
+                            value: getValuePreview(window[key]),
+                            source: 'own'
+                        });
+                    }
+                });
+            } catch (e) {
+                console.warn('获取自有属性失败:', e);
+            }
+
+            // 获取原型链上的属性
+            let obj = window;
+            while (obj && obj !== Object.prototype) {
+                try {
+                    Object.getOwnPropertyNames(obj).forEach(key => {
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            keys.push({
+                                name: key,
+                                type: getType(window[key]),
+                                value: getValuePreview(window[key]),
+                                source: 'inherited'
+                            });
+                        }
+                    });
+                    obj = Object.getPrototypeOf(obj);
+                } catch (e) {
+                    break;
+                }
+            }
+
+            return keys.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        // 获取类型
+        function getType(value) {
+            if (value === null) return 'null';
+            if (value === undefined) return 'undefined';
+            if (typeof value === 'function') return 'function';
+            if (Array.isArray(value)) return 'array';
+            if (value instanceof HTMLElement) return 'HTMLElement';
+            if (value instanceof Node) return 'Node';
+            if (typeof value === 'object') return 'object';
+            return typeof value;
+        }
+
+        // 获取值预览
+        function getValuePreview(value) {
+            try {
+                if (value === null) return 'null';
+                if (value === undefined) return 'undefined';
+                if (typeof value === 'function') {
+                    const str = value.toString();
+                    return str.length > 100 ? str.substring(0, 100) + '...' : str;
+                }
+                if (typeof value === 'string') {
+                    return value.length > 100 ? `"${value.substring(0, 100)}..."` : `"${value}"`;
+                }
+                if (typeof value === 'object') {
+                    if (value.constructor && value.constructor.name) {
+                        return `[object ${value.constructor.name}]`;
+                    }
+                    return '[object Object]';
+                }
+                return String(value);
+            } catch (e) {
+                return '[访问受限]';
+            }
+        }
+
+        // 显示结果
+        function displayResults(keys, searchTerm = '') {
+            const output = document.getElementById('output');
+            const totalCount = document.getElementById('total-count');
+            const filteredCount = document.getElementById('filtered-count');
             
-            // 清空容器
-            cookieContainer.innerHTML = '';
-            
-            if (!cookieString) {
-                cookieContainer.innerHTML = '<div class="no-cookies">当前页面没有Cookie</div>';
+            totalCount.textContent = `总属性数量: ${allWindowKeys.length}`;
+            filteredCount.textContent = `显示数量: ${keys.length}`;
+
+            if (keys.length === 0) {
+                output.innerHTML = '<div style="text-align: center; color: #666;">没有找到匹配的属性</div>';
                 return;
             }
-            
-            // 解析cookies
-            const cookies = cookieString.split(';');
-            
-            cookies.forEach(cookie => {
-                const [name, value] = cookie.trim().split('=');
-                if (name) {
-                    const cookieDiv = document.createElement('div');
-                    cookieDiv.className = 'cookie-item';
-                    cookieDiv.innerHTML = `
-                        <div class="cookie-name">名称: ${name}</div>
-                        <div class="cookie-value">值: ${value || '(空值)'}</div>
-                    `;
-                    cookieContainer.appendChild(cookieDiv);
+
+            let html = '';
+            keys.forEach(item => {
+                let displayName = item.name;
+                if (searchTerm) {
+                    displayName = displayName.replace(
+                        new RegExp(`(${searchTerm})`, 'gi'),
+                        '<span class="highlight">$1</span>'
+                    );
                 }
-            });
-        }
-        
-        // 设置示例cookie
-        function setCookieExample() {
-            const now = new Date();
-            const expires = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24小时后过期
-            
-            document.cookie = `example_cookie=${now.getTime()}; expires=${expires.toUTCString()}; path=/`;
-            document.cookie = `user_name=张三; expires=${expires.toUTCString()}; path=/`;
-            document.cookie = `session_id=abc123def456; expires=${expires.toUTCString()}; path=/`;
-            
-            alert('已设置示例Cookie!');
-            displayCookies();
-        }
-        
-        // 清除所有cookies (注意：只能清除当前域名下的cookie)
-        function clearAllCookies() {
-            const cookies = document.cookie.split(';');
-            
-            cookies.forEach(cookie => {
-                const eqPos = cookie.indexOf('=');
-                const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
-                // 设置过期时间为过去的时间来删除cookie
-                document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+                
+                html += `
+                    <div class="key-item">
+                        <span class="key-name">${displayName}</span>
+                        <span class="key-type">[${item.type}]</span>
+                        <span class="key-value">${item.value}</span>
+                    </div>
+                `;
             });
             
-            alert('已尝试清除所有Cookie!');
-            displayCookies();
+            output.innerHTML = html;
         }
-        
-        // 页面加载时显示cookies
-        window.onload = function() {
-            displayCookies();
-        };
-        
-        // 每5秒自动刷新一次（可选）
-        // setInterval(displayCookies, 5000);
+
+        // 显示所有属性
+        function showAllKeys() {
+            currentFilter = 'all';
+            filterAndDisplay();
+        }
+
+        // 只显示函数
+        function showFunctions() {
+            currentFilter = 'function';
+            filterAndDisplay();
+        }
+
+        // 只显示对象
+        function showObjects() {
+            currentFilter = 'object';
+            filterAndDisplay();
+        }
+
+        // 只显示基础类型
+        function showPrimitives() {
+            currentFilter = 'primitive';
+            filterAndDisplay();
+        }
+
+        // 过滤并显示
+        function filterAndDisplay() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            let filtered = allWindowKeys;
+
+            // 按类型过滤
+            if (currentFilter === 'function') {
+                filtered = filtered.filter(item => item.type === 'function');
+            } else if (currentFilter === 'object') {
+                filtered = filtered.filter(item => 
+                    item.type === 'object' || item.type === 'array' || 
+                    item.type === 'HTMLElement' || item.type === 'Node'
+                );
+            } else if (currentFilter === 'primitive') {
+                filtered = filtered.filter(item => 
+                    ['string', 'number', 'boolean', 'null', 'undefined'].includes(item.type)
+                );
+            }
+
+            // 按搜索词过滤
+            if (searchTerm) {
+                filtered = filtered.filter(item => 
+                    item.name.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            displayResults(filtered, searchTerm);
+        }
+
+        // 导出为JSON
+        function exportToJson() {
+            const dataStr = JSON.stringify(allWindowKeys, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'window-properties.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 搜索功能
+        document.getElementById('search-input').addEventListener('input', filterAndDisplay);
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', function() {
+            console.log('开始获取window属性...');
+            allWindowKeys = getAllWindowKeys();
+            console.log(`共找到 ${allWindowKeys.length} 个属性`);
+            showAllKeys();
+        });
+
+        // 控制台输出
+        console.log('=== Window 对象所有属性 ===');
+        console.log('可以在页面上查看详细信息，也可以在此查看:');
+        console.log('Object.getOwnPropertyNames(window):', Object.getOwnPropertyNames(window));
     </script>
 </body>
 </html>
