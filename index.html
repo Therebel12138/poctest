@@ -3,479 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSBridge 测试页面</title>
+    <title>WebView 功能测试页面</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f5f5f5;
+            line-height: 1.6;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .section {
-            margin-bottom: 30px;
+        .test-section {
+            margin: 20px 0;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
-        .section h3 {
+        .test-section h3 {
             margin-top: 0;
             color: #333;
-            border-bottom: 2px solid #007acc;
-            padding-bottom: 5px;
         }
         button {
-            background-color: #007acc;
+            background-color: #007cba;
             color: white;
             border: none;
             padding: 10px 15px;
             margin: 5px;
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 14px;
         }
         button:hover {
-            background-color: #005999;
+            background-color: #005a8b;
         }
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+        input[type="file"] {
+            margin: 10px 0;
+            padding: 5px;
         }
-        .log-area {
-            background-color: #f8f8f8;
-            border: 1px solid #ddd;
+        #progress {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #progress-bar {
+            height: 100%;
+            background-color: #007cba;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .log {
+            background-color: #f5f5f5;
             padding: 10px;
-            margin-top: 10px;
+            border-radius: 3px;
             max-height: 200px;
             overflow-y: auto;
             font-family: monospace;
             font-size: 12px;
         }
-        input, textarea {
+        video {
             width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            max-width: 400px;
+            height: auto;
         }
-        .status {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-        .status.success { background-color: #d4edda; color: #155724; }
-        .status.error { background-color: #f8d7da; color: #721c24; }
-        .status.info { background-color: #d1ecf1; color: #0c5460; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>JSBridge 测试页面</h1>
-        
-        <!-- 腾讯视频调试桥接测试 -->
-        <div class="section">
-            <h3>腾讯视频调试桥接 (sgBridge) <span id="sgStatus" class="status info">未检测</span></h3>
-            
-            <div>
-                <button onclick="testConnectionSuccess()">测试连接成功</button>
-                <button onclick="testUpdateResources()">更新资源列表</button>
-                <button onclick="testDebugConsole()">发送调试控制台消息</button>
-                <button onclick="testLogMessage()">发送日志消息</button>
-            </div>
-            
-            <div>
-                <input type="text" id="debugContent" placeholder="输入调试内容" value="Hello Debug Console">
-                <input type="text" id="logContent" placeholder="输入日志内容" value="This is a test log">
-                <select id="logLevel">
-                    <option value="info">Info</option>
-                    <option value="warn">Warning</option>
-                    <option value="error">Error</option>
-                    <option value="debug">Debug</option>
-                </select>
-            </div>
-            
-            <div class="log-area" id="sgBridgeLog">等待测试结果...</div>
-        </div>
+    <h1>WebView HtmlWebChromeClient 测试页面</h1>
+    
+    <!-- 控制台日志测试 -->
+    <div class="test-section">
+        <h3>1. 控制台日志测试</h3>
+        <p>测试 onConsoleMessage 方法</p>
+        <button onclick="testConsoleLog()">输出 LOG</button>
+        <button onclick="testConsoleWarn()">输出 WARNING</button>
+        <button onclick="testConsoleError()">输出 ERROR</button>
+        <button onclick="testConsoleDebug()">输出 DEBUG</button>
+        <div id="console-log" class="log"></div>
+    </div>
 
-        <!-- 搜狗热词桥接测试 -->
-        <div class="section">
-            <h3>搜狗热词桥接 <span id="sogouStatus" class="status info">未检测</span></h3>
-            
-            <div>
-                <button onclick="testInfo()">测试 Info</button>
-                <button onclick="testIsOffline()">测试离线状态</button>
-                <button onclick="testVersionCode()">获取版本号</button>
-                <button onclick="testVersionName()">获取版本名</button>
-                <button onclick="testWebIdentifier()">获取Web标识</button>
-            </div>
-            
-            <div>
-                <input type="text" id="appId" placeholder="输入 App ID" value="test_app_123">
-                <button onclick="testPingBack()">测试 PingBack</button>
-                <button onclick="testBeaconPing()">测试 BeaconPing</button>
-            </div>
-            
-            <div>
-                <input type="text" id="navigateUrl" placeholder="导航URL" value="https://www.sogou.com">
-                <button onclick="testNavigate()">测试导航</button>
-            </div>
-            
-            <div class="log-area" id="sogouLog">等待测试结果...</div>
-        </div>
+    <!-- JavaScript 对话框测试 -->
+    <div class="test-section">
+        <h3>2. JavaScript 对话框测试</h3>
+        <p>测试 onJsAlert、onJsConfirm、onJsPrompt 方法</p>
+        <button onclick="testAlert()">测试 Alert</button>
+        <button onclick="testConfirm()">测试 Confirm</button>
+        <button onclick="testPrompt()">测试 Prompt</button>
+        <div id="dialog-result"></div>
+    </div>
 
-        <!-- 通用测试区域 -->
-        <div class="section">
-            <h3>自定义测试</h3>
-            <textarea id="customJson" rows="4" placeholder="输入自定义JSON消息">
-{
-    "cmd": "info",
-    "appid": "test_app",
-    "callback": "testCallback"
-}
-            </textarea>
-            <button onclick="sendCustomMessage()">发送自定义消息</button>
-            <div class="log-area" id="customLog">等待测试结果...</div>
-        </div>
+    <!-- 文件上传测试 -->
+    <div class="test-section">
+        <h3>3. 文件上传测试</h3>
+        <p>测试 onShowFileChooser 方法</p>
+        <label for="file-single">单文件选择：</label>
+        <input type="file" id="file-single" accept="image/*">
+        <br>
+        <label for="file-multiple">多文件选择：</label>
+        <input type="file" id="file-multiple" multiple accept="image/*,video/*">
+        <br>
+        <label for="file-camera">相机拍照：</label>
+        <input type="file" id="file-camera" accept="image/*" capture="camera">
+        <div id="file-info"></div>
+    </div>
 
-        <!-- 环境检测 -->
-        <div class="section">
-            <h3>环境检测</h3>
-            <button onclick="detectEnvironment()">检测JSBridge环境</button>
-            <div class="log-area" id="envLog">点击检测按钮查看环境信息...</div>
+    <!-- 地理位置测试 -->
+    <div class="test-section">
+        <h3>4. 地理位置测试</h3>
+        <p>测试 onGeolocationPermissionsShowPrompt 方法</p>
+        <button onclick="testGeolocation()">获取地理位置</button>
+        <div id="location-info"></div>
+    </div>
+
+    <!-- 页面进度和标题测试 -->
+    <div class="test-section">
+        <h3>5. 页面进度和标题测试</h3>
+        <p>测试 onProgressChanged 和 onReceivedTitle 方法</p>
+        <button onclick="simulateProgress()">模拟页面加载进度</button>
+        <button onclick="changeTitle()">更改页面标题</button>
+        <div>
+            <label>加载进度：</label>
+            <div id="progress">
+                <div id="progress-bar"></div>
+            </div>
+            <span id="progress-text">0%</span>
         </div>
+        <div>当前标题：<span id="current-title">WebView 功能测试页面</span></div>
+    </div>
+
+    <!-- 视频全屏测试 -->
+    <div class="test-section">
+        <h3>6. 视频全屏测试</h3>
+        <p>测试 onShowCustomView 和 onHideCustomView 方法</p>
+        <video controls>
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            <source src="https://www.w3schools.com/html/mov_bbb.ogg" type="video/ogg">
+            您的浏览器不支持视频标签。
+        </video>
+        <p>点击视频播放器的全屏按钮测试全屏功能</p>
+    </div>
+
+    <!-- 页面跳转测试 -->
+    <div class="test-section">
+        <h3>7. 页面跳转测试</h3>
+        <p>测试页面跳转和返回功能</p>
+        <button onclick="loadNewPage()">加载新页面（模拟）</button>
+        <button onclick="testBeforeUnload()">测试页面离开确认</button>
     </div>
 
     <script>
-        // 日志输出函数
-        function log(elementId, message, type = 'info') {
-            const element = document.getElementById(elementId);
-            const timestamp = new Date().toLocaleTimeString();
-            const logEntry = `[${timestamp}] ${message}\n`;
-            element.textContent += logEntry;
-            element.scrollTop = element.scrollHeight;
-            
-            console.log(`${elementId}: ${message}`);
+        // 控制台日志测试
+        function testConsoleLog() {
+            console.log("这是一条 LOG 信息");
+            updateConsoleLog("发送了 LOG 信息");
         }
 
-        // 清空日志
-        function clearLog(elementId) {
-            document.getElementById(elementId).textContent = '';
+        function testConsoleWarn() {
+            console.warn("这是一条 WARNING 信息");
+            updateConsoleLog("发送了 WARNING 信息");
         }
 
-        // 环境检测
-        function detectEnvironment() {
-            clearLog('envLog');
-            log('envLog', '开始检测JSBridge环境...');
+        function testConsoleError() {
+            console.error("这是一条 ERROR 信息");
+            updateConsoleLog("发送了 ERROR 信息");
+        }
+
+        function testConsoleDebug() {
+            console.debug("这是一条 DEBUG 信息");
+            updateConsoleLog("发送了 DEBUG 信息");
+        }
+
+        function updateConsoleLog(message) {
+            const logDiv = document.getElementById('console-log');
+            logDiv.innerHTML += new Date().toLocaleTimeString() + ": " + message + "<br>";
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // JavaScript 对话框测试
+        function testAlert() {
+            alert("这是一个 Alert 对话框测试");
+            document.getElementById('dialog-result').innerHTML = "Alert 对话框已显示";
+        }
+
+        function testConfirm() {
+            const result = confirm("这是一个 Confirm 对话框，请选择确定或取消");
+            document.getElementById('dialog-result').innerHTML = "Confirm 结果: " + (result ? "确定" : "取消");
+        }
+
+        function testPrompt() {
+            const result = prompt("这是一个 Prompt 对话框，请输入一些文本:", "默认文本");
+            document.getElementById('dialog-result').innerHTML = "Prompt 结果: " + (result || "取消");
+        }
+
+        // 文件上传测试
+        document.getElementById('file-single').addEventListener('change', function(e) {
+            handleFileSelect(e, '单文件');
+        });
+
+        document.getElementById('file-multiple').addEventListener('change', function(e) {
+            handleFileSelect(e, '多文件');
+        });
+
+        document.getElementById('file-camera').addEventListener('change', function(e) {
+            handleFileSelect(e, '相机');
+        });
+
+        function handleFileSelect(event, type) {
+            const files = event.target.files;
+            const infoDiv = document.getElementById('file-info');
+            let info = `${type}选择了 ${files.length} 个文件:<br>`;
             
-            // 检测sgBridge
-            if (window.sgBridge && typeof window.sgBridge.postMessage === 'function') {
-                log('envLog', '✓ sgBridge 可用');
-                document.getElementById('sgStatus').textContent = '可用';
-                document.getElementById('sgStatus').className = 'status success';
-            } else {
-                log('envLog', '✗ sgBridge 不可用');
-                document.getElementById('sgStatus').textContent = '不可用';
-                document.getElementById('sgStatus').className = 'status error';
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                info += `文件 ${i + 1}: ${file.name}, 大小: ${file.size} bytes, 类型: ${file.type}<br>`;
             }
             
-            // 检测其他可能的桥接对象
-            const bridges = ['sogouBridge', 'nativeBridge', 'webkit', 'android'];
-            bridges.forEach(bridge => {
-                if (window[bridge]) {
-                    log('envLog', `✓ 发现桥接对象: ${bridge}`);
-                } else {
-                    log('envLog', `✗ 未发现桥接对象: ${bridge}`);
+            infoDiv.innerHTML = info;
+        }
+
+        // 地理位置测试
+        function testGeolocation() {
+            const locationInfo = document.getElementById('location-info');
+            
+            if (navigator.geolocation) {
+                locationInfo.innerHTML = "正在获取位置信息...";
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        locationInfo.innerHTML = `位置获取成功:<br>纬度: ${lat}<br>经度: ${lon}`;
+                    },
+                    function(error) {
+                        locationInfo.innerHTML = `位置获取失败: ${error.message}`;
+                    }
+                );
+            } else {
+                locationInfo.innerHTML = "浏览器不支持地理位置功能";
+            }
+        }
+
+        // 页面进度和标题测试
+        function simulateProgress() {
+            let progress = 0;
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = progress + '%';
+                progressText.textContent = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
                 }
+            }, 200);
+        }
+
+        function changeTitle() {
+            const newTitle = "新的页面标题 - " + new Date().toLocaleTimeString();
+            document.title = newTitle;
+            document.getElementById('current-title').textContent = newTitle;
+        }
+
+        // 页面跳转测试
+        function loadNewPage() {
+            const newContent = `
+                <h2>新页面内容</h2>
+                <p>这是通过 JavaScript 动态加载的新内容</p>
+                <button onclick="location.reload()">返回原页面</button>
+            `;
+            document.body.innerHTML = newContent;
+        }
+
+        function testBeforeUnload() {
+            window.addEventListener('beforeunload', function(e) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '确定要离开此页面吗？';
             });
             
-            // 检测User Agent
-            log('envLog', `User Agent: ${navigator.userAgent}`);
-            
-            // 检测回调函数
-            log('envLog', '注册全局回调函数...');
-            window.testCallback = function(result) {
-                log('sogouLog', `回调函数被调用: ${JSON.stringify(result)}`);
-            };
+            alert('已设置页面离开确认，尝试刷新或关闭页面来测试');
         }
 
-        // 腾讯视频调试桥接测试函数
-        function testConnectionSuccess() {
-            if (!window.sgBridge) {
-                log('sgBridgeLog', 'sgBridge 不可用', 'error');
-                return;
-            }
-            
-            const message = {
-                category: "request",
-                body: {
-                    cmd: "connectionSuccess",
-                    data: {
-                        brand: "TestBrand"
-                    }
-                }
-            };
-            
-            log('sgBridgeLog', `发送连接成功消息: ${JSON.stringify(message)}`);
-            try {
-                window.sgBridge.postMessage(JSON.stringify(message));
-                log('sgBridgeLog', '连接成功消息已发送');
-            } catch (e) {
-                log('sgBridgeLog', `发送失败: ${e.message}`, 'error');
-            }
-        }
-
-        function testUpdateResources() {
-            if (!window.sgBridge) {
-                log('sgBridgeLog', 'sgBridge 不可用', 'error');
-                return;
-            }
-            
-            const message = {
-                category: "request",
-                body: {
-                    cmd: "updateLoadedResources",
-                    data: {
-                        content: [
-                            {
-                                type: "js",
-                                id: "test_resource_1",
-                                version: "1.0.0",
-                                isTemp: false
-                            },
-                            {
-                                type: "css",
-                                id: "test_resource_2", 
-                                version: "1.2.0",
-                                isTemp: true
-                            }
-                        ]
-                    }
-                }
-            };
-            
-            log('sgBridgeLog', `发送资源更新消息: ${JSON.stringify(message)}`);
-            try {
-                window.sgBridge.postMessage(JSON.stringify(message));
-                log('sgBridgeLog', '资源更新消息已发送');
-            } catch (e) {
-                log('sgBridgeLog', `发送失败: ${e.message}`, 'error');
-            }
-        }
-
-        function testDebugConsole() {
-            if (!window.sgBridge) {
-                log('sgBridgeLog', 'sgBridge 不可用', 'error');
-                return;
-            }
-            
-            const content = document.getElementById('debugContent').value;
-            const message = {
-                category: "request",
-                body: {
-                    cmd: "appendDebugConsole",
-                    data: {
-                        content: content
-                    }
-                }
-            };
-            
-            log('sgBridgeLog', `发送调试控制台消息: ${JSON.stringify(message)}`);
-            try {
-                window.sgBridge.postMessage(JSON.stringify(message));
-                log('sgBridgeLog', '调试控制台消息已发送');
-            } catch (e) {
-                log('sgBridgeLog', `发送失败: ${e.message}`, 'error');
-            }
-        }
-
-        function testLogMessage() {
-            if (!window.sgBridge) {
-                log('sgBridgeLog', 'sgBridge 不可用', 'error');
-                return;
-            }
-            
-            const content = document.getElementById('logContent').value;
-            const level = document.getElementById('logLevel').value;
-            const message = {
-                category: "request", 
-                body: {
-                    cmd: "appendLog",
-                    data: {
-                        text: content,
-                        level: level
-                    }
-                }
-            };
-            
-            log('sgBridgeLog', `发送日志消息: ${JSON.stringify(message)}`);
-            try {
-                window.sgBridge.postMessage(JSON.stringify(message));
-                log('sgBridgeLog', '日志消息已发送');
-            } catch (e) {
-                log('sgBridgeLog', `发送失败: ${e.message}`, 'error');
-            }
-        }
-
-        // 搜狗热词桥接测试函数（这些需要通过原生代码模拟调用）
-        function testInfo() {
-            const appId = document.getElementById('appId').value;
-            const message = {
-                cmd: "info",
-                appid: appId
-            };
-            
-            log('sogouLog', `测试 Info: ${JSON.stringify(message)}`);
-            // 由于这些是原生处理的，我们只能模拟发送
-            simulateNativeCall('info', message);
-        }
-
-        function testIsOffline() {
-            const message = {
-                cmd: "isOffline",
-                callback: "testCallback"
-            };
-            
-            log('sogouLog', `测试离线状态: ${JSON.stringify(message)}`);
-            simulateNativeCall('isOffline', message);
-        }
-
-        function testVersionCode() {
-            const message = {
-                cmd: "versionCode",
-                callback: "testCallback"
-            };
-            
-            log('sogouLog', `获取版本号: ${JSON.stringify(message)}`);
-            simulateNativeCall('versionCode', message);
-        }
-
-        function testVersionName() {
-            const message = {
-                cmd: "versionName", 
-                callback: "testCallback"
-            };
-            
-            log('sogouLog', `获取版本名: ${JSON.stringify(message)}`);
-            simulateNativeCall('versionName', message);
-        }
-
-        function testWebIdentifier() {
-            const message = {
-                cmd: "webIdentifier",
-                callback: "testCallback"
-            };
-            
-            log('sogouLog', `获取Web标识: ${JSON.stringify(message)}`);
-            simulateNativeCall('webIdentifier', message);
-        }
-
-        function testPingBack() {
-            const message = {
-                cmd: "pingback",
-                data: {
-                    url: "https://api.example.com/pingback",
-                    params: {
-                        action: "test",
-                        timestamp: Date.now()
-                    }
-                },
-                callback: "testCallback"
-            };
-            
-            log('sogouLog', `测试 PingBack: ${JSON.stringify(message)}`);
-            simulateNativeCall('pingback', message);
-        }
-
-        function testBeaconPing() {
-            const message = {
-                cmd: "beaconPing",
-                data: {
-                    url: "https://api.example.com/beacon",
-                    data: "test_beacon_data"
-                },
-                callback: "testCallback"
-            };
-            
-            log('sogouLog', `测试 BeaconPing: ${JSON.stringify(message)}`);
-            simulateNativeCall('beaconPing', message);
-        }
-
-        function testNavigate() {
-            const url = document.getElementById('navigateUrl').value;
-            const message = {
-                cmd: "navigate",
-                url: url,
-                callback: "testCallback"
-            };
-            
-            log('sogouLog', `测试导航: ${JSON.stringify(message)}`);
-            simulateNativeCall('navigate', message);
-        }
-
-        // 模拟原生调用
-        function simulateNativeCall(cmd, message) {
-            log('sogouLog', `模拟原生调用 ${cmd}，实际应用中需要原生代码处理`);
-            
-            // 模拟一些回调响应
-            setTimeout(() => {
-                switch(cmd) {
-                    case 'versionCode':
-                        window.testCallback && window.testCallback({code: 0, data: {versionCode: 123456}});
-                        break;
-                    case 'versionName':
-                        window.testCallback && window.testCallback({code: 0, data: {versionName: "1.2.3"}});
-                        break;
-                    case 'isOffline':
-                        window.testCallback && window.testCallback(0); // 0表示在线
-                        break;
-                    case 'webIdentifier':
-                        window.testCallback && window.testCallback({code: 0, data: {identifier: "web_123456"}});
-                        break;
-                    default:
-                        window.testCallback && window.testCallback({code: 0, message: "success"});
-                }
-            }, 1000);
-        }
-
-        function sendCustomMessage() {
-            try {
-                const customJson = document.getElementById('customJson').value;
-                const message = JSON.parse(customJson);
-                
-                log('customLog', `发送自定义消息: ${JSON.stringify(message)}`);
-                
-                if (window.sgBridge && message.category) {
-                    // 发送到sgBridge
-                    window.sgBridge.postMessage(JSON.stringify(message));
-                    log('customLog', '已通过 sgBridge 发送');
-                } else {
-                    // 模拟发送到搜狗桥接
-                    simulateNativeCall(message.cmd, message);
-                    log('customLog', '已模拟发送到搜狗桥接');
-                }
-            } catch (e) {
-                log('customLog', `解析JSON失败: ${e.message}`, 'error');
-            }
-        }
-
-        // 全局回调函数
-        window.testCallback = function(result) {
-            log('sogouLog', `收到回调: ${JSON.stringify(result)}`);
-        };
-
-        // 页面加载完成后自动检测环境
+        // 页面加载完成后的初始化
         window.onload = function() {
-            detectEnvironment();
-        };
+            console.log("页面加载完成");
+            updateConsoleLog("页面初始化完成");
+        }
+
+        // 监听页面标题变化
+        const titleObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    document.getElementById('current-title').textContent = document.title;
+                }
+            });
+        });
+
+        titleObserver.observe(document.querySelector('title'), {
+            childList: true
+        });
     </script>
 </body>
 </html>
