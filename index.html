@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Window对象属性查看器</title>
+    <title>SogouJSInterface 测试页面</title>
     <style>
         body {
-            font-family: 'Courier New', monospace;
-            margin: 20px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
             background-color: #f5f5f5;
         }
         .container {
-            max-width: 1200px;
+            max-width: 600px;
             margin: 0 auto;
             background: white;
             padding: 20px;
@@ -23,303 +24,506 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        .stats {
-            background: #e8f4f8;
+        .section {
+            margin-bottom: 30px;
             padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .search-box {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .search-box input {
-            padding: 10px;
-            width: 300px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            border-radius: 5px;
+            background-color: #fafafa;
         }
-        .buttons {
-            text-align: center;
-            margin-bottom: 20px;
+        .section h3 {
+            margin-top: 0;
+            color: #666;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
         }
-        .btn {
-            padding: 8px 16px;
-            margin: 0 5px;
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            margin: 5px;
             font-size: 14px;
         }
-        .btn-primary { background: #007bff; color: white; }
-        .btn-secondary { background: #6c757d; color: white; }
-        .btn-success { background: #28a745; color: white; }
-        .output {
+        button:hover {
+            background-color: #45a049;
+        }
+        button:active {
+            background-color: #3d8b40;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
             border: 1px solid #ddd;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 5px;
-            max-height: 600px;
-            overflow-y: auto;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .result {
+            background-color: #e8f5e8;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+            font-family: monospace;
             white-space: pre-wrap;
-            font-size: 12px;
-            line-height: 1.4;
+            max-height: 200px;
+            overflow-y: auto;
         }
-        .key-item {
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
+        .error {
+            background-color: #ffe8e8;
+            border-left-color: #f44336;
         }
-        .key-name {
-            color: #0066cc;
+        .input-group {
+            margin: 10px 0;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
             font-weight: bold;
-        }
-        .key-type {
-            color: #666;
-            font-style: italic;
-            margin-left: 10px;
-        }
-        .key-value {
-            color: #333;
-            margin-left: 10px;
-            max-width: 500px;
-            display: inline-block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .highlight {
-            background-color: yellow;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔍 Window对象属性查看器</h1>
-        
-        <div class="stats">
-            <span id="total-count">总属性数量: 0</span> | 
-            <span id="filtered-count">显示数量: 0</span>
+        <h1>SogouJSInterface 测试页面</h1>
+
+        <!-- 基础信息获取 -->
+        <div class="section">
+            <h3>📱 基础信息获取</h3>
+            <button onclick="getBasicInfo()">获取基础信息</button>
+            <button onclick="getLoginState()">获取登录状态</button>
+            <button onclick="getUniqueId()">获取唯一ID</button>
+            <button onclick="getSogouAndroidId()">获取搜狗Android ID</button>
+            <button onclick="getQ36()">获取Q36</button>
+            <div id="basicInfoResult" class="result" style="display:none;"></div>
         </div>
 
-        <div class="search-box">
-            <input type="text" id="search-input" placeholder="搜索属性名..." />
+        <!-- 系统功能 -->
+        <div class="section">
+            <h3>🔧 系统功能</h3>
+            <div class="input-group">
+                <label>复制文本:</label>
+                <input type="text" id="clipboardText" placeholder="输入要复制的文本" value="Hello SogouJS!">
+            </div>
+            <button onclick="copyToClipboard()">复制到剪贴板</button>
+            <button onclick="requestClipboardText()">获取剪贴板内容</button>
+            <button onclick="showToast()">显示Toast</button>
+            <button onclick="getWebviewContentPadding()">获取WebView边距</button>
+            <div id="systemResult" class="result" style="display:none;"></div>
         </div>
 
-        <div class="buttons">
-            <button class="btn btn-primary" onclick="showAllKeys()">显示所有属性</button>
-            <button class="btn btn-secondary" onclick="showFunctions()">只显示函数</button>
-            <button class="btn btn-success" onclick="showObjects()">只显示对象</button>
-            <button class="btn btn-secondary" onclick="showPrimitives()">只显示基础类型</button>
-            <button class="btn btn-primary" onclick="exportToJson()">导出JSON</button>
+        <!-- 录音功能 -->
+        <div class="section">
+            <h3>🎤 录音功能</h3>
+            <button onclick="startRecord()">开始录音</button>
+            <button onclick="stopRecord()">停止录音</button>
+            <button onclick="cancelRecording()">取消录音</button>
+            <button onclick="getRecordFilePath()">获取录音文件路径</button>
+            <div class="input-group">
+                <label>录音配置 (JSON):</label>
+                <textarea id="recordConfig" rows="3">{"questionId": 1, "callback": "onRecordCallback"}</textarea>
+            </div>
+            <button onclick="startRecordingWithConfig()">开始录音(带配置)</button>
+            <button onclick="stopRecordingWithConfig()">停止录音(带配置)</button>
+            <div id="recordResult" class="result" style="display:none;"></div>
         </div>
 
-        <div class="output" id="output"></div>
+        <!-- 分享功能 -->
+        <div class="section">
+            <h3>📤 分享功能</h3>
+            <div class="input-group">
+                <label>分享标题:</label>
+                <input type="text" id="shareTitle" value="测试分享标题">
+            </div>
+            <div class="input-group">
+                <label>分享内容:</label>
+                <input type="text" id="shareContent" value="这是测试分享的内容">
+            </div>
+            <div class="input-group">
+                <label>分享链接:</label>
+                <input type="text" id="shareUrl" value="https://www.sogou.com">
+            </div>
+            <div class="input-group">
+                <label>分享图片URL:</label>
+                <input type="text" id="shareImgUrl" value="https://www.sogou.com/images/logo.png">
+            </div>
+            <button onclick="setShareInfo()">设置分享信息</button>
+            <button onclick="shareToApp()">分享到应用</button>
+            <button onclick="openShareWin()">打开分享窗口</button>
+            <div id="shareResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 应用操作 -->
+        <div class="section">
+            <h3>📱 应用操作</h3>
+            <div class="input-group">
+                <label>应用包名:</label>
+                <input type="text" id="packageName" value="com.tencent.mm" placeholder="如: com.tencent.mm">
+            </div>
+            <button onclick="checkAppExist()">检查应用是否存在</button>
+            <button onclick="checkAppInstalled()">检查应用是否安装</button>
+            <button onclick="jumpToWeChat()">跳转到微信</button>
+            <button onclick="openAppWithScheme()">通过Scheme打开应用</button>
+            <div id="appResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 登录功能 -->
+        <div class="section">
+            <h3>👤 登录功能</h3>
+            <div class="input-group">
+                <label>登录域名:</label>
+                <input type="text" id="loginDomain" value="sogou.com">
+            </div>
+            <button onclick="loginAccount()">登录账户</button>
+            <button onclick="loginByPhone()">手机号登录</button>
+            <button onclick="loginWithUnionPhone()">联合手机登录</button>
+            <button onclick="getPhoneNumber()">获取手机号</button>
+            <button onclick="didLogout()">登出</button>
+            <div id="loginResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 页面控制 -->
+        <div class="section">
+            <h3>🎮 页面控制</h3>
+            <div class="input-group">
+                <label>标题文本:</label>
+                <input type="text" id="titleText" value="新的页面标题">
+            </div>
+            <button onclick="setTitleText()">设置标题</button>
+            <button onclick="goBack()">返回</button>
+            <button onclick="closePage()">关闭页面</button>
+            <button onclick="setEnableShare()">启用分享</button>
+            <button onclick="showHongrenTitlebar()">显示标题栏</button>
+            <div id="pageResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 网络请求 -->
+        <div class="section">
+            <h3>🌐 网络请求</h3>
+            <div class="input-group">
+                <label>请求URL:</label>
+                <input type="text" id="requestUrl" value="https://www.sogou.com/api/test">
+            </div>
+            <div class="input-group">
+                <label>请求方法:</label>
+                <select id="requestMethod">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>请求参数 (JSON):</label>
+                <textarea id="requestParams" rows="3">{"key": "value"}</textarea>
+            </div>
+            <button onclick="clientRequest()">发送请求</button>
+            <div id="requestResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 其他功能 -->
+        <div class="section">
+            <h3>🔍 其他功能</h3>
+            <button onclick="isGyroscopeEnable()">检查陀螺仪</button>
+            <button onclick="openSearchActivity()">打开搜索</button>
+            <button onclick="openMySuit()">打开我的套装</button>
+            <button onclick="openMyWallpaper()">打开我的壁纸</button>
+            <button onclick="searchSuit()">搜索套装</button>
+            <div id="otherResult" class="result" style="display:none;"></div>
+        </div>
     </div>
 
     <script>
-        let allWindowKeys = [];
-        let currentFilter = 'all';
+        // 全局回调函数
+        window.onRecordCallback = function(result) {
+            showResult('recordResult', '录音回调: ' + JSON.stringify(result));
+        };
 
-        // 获取所有window属性
-        function getAllWindowKeys() {
-            const keys = [];
-            const seen = new Set();
-            
-            // 获取自有属性
+        window.onRequestCallback = function(result) {
+            showResult('requestResult', '请求回调: ' + JSON.stringify(result));
+        };
+
+        window.onShareCallback = function(result) {
+            showResult('shareResult', '分享回调: ' + JSON.stringify(result));
+        };
+
+        window.onClipboardCallback = function(result) {
+            showResult('systemResult', '剪贴板回调: ' + JSON.stringify(result));
+        };
+
+        window.onPaddingCallback = function(result) {
+            showResult('systemResult', 'WebView边距: ' + JSON.stringify(result));
+        };
+
+        function showResult(elementId, text, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = text;
+            element.className = isError ? 'result error' : 'result';
+        }
+
+        function callJSBridge(method, ...args) {
             try {
-                Object.getOwnPropertyNames(window).forEach(key => {
-                    if (!seen.has(key)) {
-                        seen.add(key);
-                        keys.push({
-                            name: key,
-                            type: getType(window[key]),
-                            value: getValuePreview(window[key]),
-                            source: 'own'
-                        });
-                    }
-                });
-            } catch (e) {
-                console.warn('获取自有属性失败:', e);
-            }
-
-            // 获取原型链上的属性
-            let obj = window;
-            while (obj && obj !== Object.prototype) {
-                try {
-                    Object.getOwnPropertyNames(obj).forEach(key => {
-                        if (!seen.has(key)) {
-                            seen.add(key);
-                            keys.push({
-                                name: key,
-                                type: getType(window[key]),
-                                value: getValuePreview(window[key]),
-                                source: 'inherited'
-                            });
-                        }
-                    });
-                    obj = Object.getPrototypeOf(obj);
-                } catch (e) {
-                    break;
+                if (window.SogouHotwordsUtils && typeof window.SogouHotwordsUtils[method] === 'function') {
+                    return window.SogouHotwordsUtils[method](...args);
+                } else {
+                    throw new Error(`方法 ${method} 不存在或不可用`);
                 }
-            }
-
-            return keys.sort((a, b) => a.name.localeCompare(b.name));
-        }
-
-        // 获取类型
-        function getType(value) {
-            if (value === null) return 'null';
-            if (value === undefined) return 'undefined';
-            if (typeof value === 'function') return 'function';
-            if (Array.isArray(value)) return 'array';
-            if (value instanceof HTMLElement) return 'HTMLElement';
-            if (value instanceof Node) return 'Node';
-            if (typeof value === 'object') return 'object';
-            return typeof value;
-        }
-
-        // 获取值预览
-        function getValuePreview(value) {
-            try {
-                if (value === null) return 'null';
-                if (value === undefined) return 'undefined';
-                if (typeof value === 'function') {
-                    const str = value.toString();
-                    return str.length > 100 ? str.substring(0, 100) + '...' : str;
-                }
-                if (typeof value === 'string') {
-                    return value.length > 100 ? `"${value.substring(0, 100)}..."` : `"${value}"`;
-                }
-                if (typeof value === 'object') {
-                    if (value.constructor && value.constructor.name) {
-                        return `[object ${value.constructor.name}]`;
-                    }
-                    return '[object Object]';
-                }
-                return String(value);
-            } catch (e) {
-                return '[访问受限]';
+            } catch (error) {
+                console.error('调用JSBridge失败:', error);
+                return null;
             }
         }
 
-        // 显示结果
-        function displayResults(keys, searchTerm = '') {
-            const output = document.getElementById('output');
-            const totalCount = document.getElementById('total-count');
-            const filteredCount = document.getElementById('filtered-count');
+        // 基础信息获取
+        function getBasicInfo() {
+            const version = callJSBridge('getHotwordsSDKVersion');
+            const ua = callJSBridge('getHotwordsSDKUA');
+            showResult('basicInfoResult', `SDK版本: ${version}\nUA: ${ua}`);
+        }
+
+        function getLoginState() {
+            const state = callJSBridge('getLoginState', '');
+            showResult('basicInfoResult', `登录状态: ${state}`);
+        }
+
+        function getUniqueId() {
+            const id = callJSBridge('getUniqueId');
+            showResult('basicInfoResult', `唯一ID: ${id}`);
+        }
+
+        function getSogouAndroidId() {
+            const id = callJSBridge('getSogouAndroidId');
+            showResult('basicInfoResult', `搜狗Android ID: ${id}`);
+        }
+
+        function getQ36() {
+            const q36 = callJSBridge('getQ36');
+            showResult('basicInfoResult', `Q36: ${q36}`);
+        }
+
+        // 系统功能
+        function copyToClipboard() {
+            const text = document.getElementById('clipboardText').value;
+            callJSBridge('copyToClipboard', text);
+            showResult('systemResult', `已复制: ${text}`);
+        }
+
+        function requestClipboardText() {
+            callJSBridge('requestClipBoardText', 'onClipboardCallback');
+        }
+
+        function showToast() {
+            callJSBridge('showToast', '这是一个测试Toast', true);
+            showResult('systemResult', '已显示Toast');
+        }
+
+        function getWebviewContentPadding() {
+            callJSBridge('getWebviewContentPadding', 'onPaddingCallback');
+        }
+
+        // 录音功能
+        function startRecord() {
+            callJSBridge('startRecord');
+            showResult('recordResult', '开始录音');
+        }
+
+        function stopRecord() {
+            callJSBridge('stopRecord');
+            showResult('recordResult', '停止录音');
+        }
+
+        function cancelRecording() {
+            callJSBridge('cancelRecording');
+            showResult('recordResult', '取消录音');
+        }
+
+        function getRecordFilePath() {
+            callJSBridge('getRecordFilePath', 'onRecordCallback');
+        }
+
+        function startRecordingWithConfig() {
+            const config = document.getElementById('recordConfig').value;
+            callJSBridge('startRecording', config);
+            showResult('recordResult', '开始录音(配置): ' + config);
+        }
+
+        function stopRecordingWithConfig() {
+            const config = document.getElementById('recordConfig').value;
+            callJSBridge('stopRecording', config);
+            showResult('recordResult', '停止录音(配置): ' + config);
+        }
+
+        // 分享功能
+        function setShareInfo() {
+            const title = document.getElementById('shareTitle').value;
+            const content = document.getElementById('shareContent').value;
+            const url = document.getElementById('shareUrl').value;
+            const imgUrl = document.getElementById('shareImgUrl').value;
+
+            callJSBridge('setShareTitle', title);
+            callJSBridge('setShareContent', content);
+            callJSBridge('setShareContentUrl', url);
+            callJSBridge('setShareImgUrl', imgUrl);
             
-            totalCount.textContent = `总属性数量: ${allWindowKeys.length}`;
-            filteredCount.textContent = `显示数量: ${keys.length}`;
+            showResult('shareResult', '已设置分享信息');
+        }
 
-            if (keys.length === 0) {
-                output.innerHTML = '<div style="text-align: center; color: #666;">没有找到匹配的属性</div>';
-                return;
-            }
-
-            let html = '';
-            keys.forEach(item => {
-                let displayName = item.name;
-                if (searchTerm) {
-                    displayName = displayName.replace(
-                        new RegExp(`(${searchTerm})`, 'gi'),
-                        '<span class="highlight">$1</span>'
-                    );
-                }
-                
-                html += `
-                    <div class="key-item">
-                        <span class="key-name">${displayName}</span>
-                        <span class="key-type">[${item.type}]</span>
-                        <span class="key-value">${item.value}</span>
-                    </div>
-                `;
-            });
+        function shareToApp() {
+            const title = document.getElementById('shareTitle').value;
+            const content = document.getElementById('shareContent').value;
+            const url = document.getElementById('shareUrl').value;
+            const imgUrl = document.getElementById('shareImgUrl').value;
             
-            output.innerHTML = html;
+            callJSBridge('shareToApp', title, content, url, imgUrl);
+            showResult('shareResult', '分享到应用');
         }
 
-        // 显示所有属性
-        function showAllKeys() {
-            currentFilter = 'all';
-            filterAndDisplay();
+        function openShareWin() {
+            const shareInfo = {
+                info: JSON.stringify({
+                    title: document.getElementById('shareTitle').value,
+                    content: document.getElementById('shareContent').value,
+                    url: document.getElementById('shareUrl').value,
+                    imgUrl: document.getElementById('shareImgUrl').value
+                }),
+                callback: 'onShareCallback'
+            };
+            callJSBridge('openShareWin', JSON.stringify(shareInfo));
         }
 
-        // 只显示函数
-        function showFunctions() {
-            currentFilter = 'function';
-            filterAndDisplay();
+        // 应用操作
+        function checkAppExist() {
+            const packageName = document.getElementById('packageName').value;
+            const exists = callJSBridge('checkAppExist', packageName);
+            showResult('appResult', `应用 ${packageName} ${exists ? '存在' : '不存在'}`);
         }
 
-        // 只显示对象
-        function showObjects() {
-            currentFilter = 'object';
-            filterAndDisplay();
+        function checkAppInstalled() {
+            const packageName = document.getElementById('packageName').value;
+            callJSBridge('checkAppInstalled', packageName, 'onAppCheckCallback');
         }
 
-        // 只显示基础类型
-        function showPrimitives() {
-            currentFilter = 'primitive';
-            filterAndDisplay();
+        function jumpToWeChat() {
+            callJSBridge('jumpToWeChat');
+            showResult('appResult', '尝试跳转到微信');
         }
 
-        // 过滤并显示
-        function filterAndDisplay() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            let filtered = allWindowKeys;
+        function openAppWithScheme() {
+            const config = {
+                packageName: document.getElementById('packageName').value,
+                callback: 'onAppOpenCallback'
+            };
+            callJSBridge('openAppWithScheme', JSON.stringify(config));
+        }
 
-            // 按类型过滤
-            if (currentFilter === 'function') {
-                filtered = filtered.filter(item => item.type === 'function');
-            } else if (currentFilter === 'object') {
-                filtered = filtered.filter(item => 
-                    item.type === 'object' || item.type === 'array' || 
-                    item.type === 'HTMLElement' || item.type === 'Node'
-                );
-            } else if (currentFilter === 'primitive') {
-                filtered = filtered.filter(item => 
-                    ['string', 'number', 'boolean', 'null', 'undefined'].includes(item.type)
-                );
+        // 登录功能
+        function loginAccount() {
+            const domain = document.getElementById('loginDomain').value;
+            callJSBridge('loginAccount', domain);
+            showResult('loginResult', `尝试登录域名: ${domain}`);
+        }
+
+        function loginByPhone() {
+            callJSBridge('loginByPhone');
+            showResult('loginResult', '尝试手机号登录');
+        }
+
+        function loginWithUnionPhone() {
+            const config = JSON.stringify({callback: 'onLoginCallback'});
+            callJSBridge('loginWithUnionPhone', config);
+        }
+
+        function getPhoneNumber() {
+            callJSBridge('getPhoneNumber', 'onPhoneNumberCallback');
+        }
+
+        function didLogout() {
+            callJSBridge('didLogout', 1);
+            showResult('loginResult', '已登出');
+        }
+
+        // 页面控制
+        function setTitleText() {
+            const title = document.getElementById('titleText').value;
+            callJSBridge('setTitleText', title);
+            showResult('pageResult', `设置标题: ${title}`);
+        }
+
+        function goBack() {
+            callJSBridge('goBack');
+            showResult('pageResult', '返回');
+        }
+
+        function closePage() {
+            callJSBridge('closePage');
+            showResult('pageResult', '关闭页面');
+        }
+
+        function setEnableShare() {
+            callJSBridge('setEnableShare', 1);
+            showResult('pageResult', '启用分享');
+        }
+
+        function showHongrenTitlebar() {
+            callJSBridge('showHongrenTitlebar', true);
+            showResult('pageResult', '显示标题栏');
+        }
+
+        // 网络请求
+        function clientRequest() {
+            const url = document.getElementById('requestUrl').value;
+            const method = document.getElementById('requestMethod').value;
+            const params = document.getElementById('requestParams').value;
+            
+            const requestConfig = {
+                url: url,
+                method: method,
+                postParams: params,
+                callback: 'onRequestCallback',
+                urlIgnoreSogouQq: false
+            };
+            
+            callJSBridge('clientRequest', JSON.stringify(requestConfig));
+            showResult('requestResult', '发送请求中...');
+        }
+
+        // 其他功能
+        function isGyroscopeEnable() {
+            const enabled = callJSBridge('isGyroscopeEnable');
+            showResult('otherResult', `陀螺仪${enabled ? '已启用' : '未启用'}`);
+        }
+
+        function openSearchActivity() {
+            callJSBridge('openSearchActivity', 0);
+            showResult('otherResult', '打开搜索界面');
+        }
+
+        function openMySuit() {
+            callJSBridge('openMySuit');
+            showResult('otherResult', '打开我的套装');
+        }
+
+        function openMyWallpaper() {
+            callJSBridge('openMyWallpaper');
+            showResult('otherResult', '打开我的壁纸');
+        }
+
+        function searchSuit() {
+            callJSBridge('searchSuit');
+            showResult('otherResult', '搜索套装');
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('SogouJSInterface 测试页面已加载');
+            if (window.SogouHotwordsUtils) {
+                console.log('JSBridge 可用');
+            } else {
+                console.log('JSBridge 不可用，请在搜狗输入法环境中测试');
             }
-
-            // 按搜索词过滤
-            if (searchTerm) {
-                filtered = filtered.filter(item => 
-                    item.name.toLowerCase().includes(searchTerm)
-                );
-            }
-
-            displayResults(filtered, searchTerm);
-        }
-
-        // 导出为JSON
-        function exportToJson() {
-            const dataStr = JSON.stringify(allWindowKeys, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'window-properties.json';
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // 搜索功能
-        document.getElementById('search-input').addEventListener('input', filterAndDisplay);
-
-        // 页面加载完成后初始化
-        window.addEventListener('load', function() {
-            console.log('开始获取window属性...');
-            allWindowKeys = getAllWindowKeys();
-            console.log(`共找到 ${allWindowKeys.length} 个属性`);
-            showAllKeys();
         });
-
-        // 控制台输出
-        console.log('=== Window 对象所有属性 ===');
-        console.log('可以在页面上查看详细信息，也可以在此查看:');
-        console.log('Object.getOwnPropertyNames(window):', Object.getOwnPropertyNames(window));
     </script>
 </body>
 </html>
