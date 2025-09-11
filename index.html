@@ -3,57 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SogouJSInterface 测试页面</title>
+    <title>JSBridge 测试页面</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
+            margin: 20px;
             background-color: #f5f5f5;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
         .section {
             margin-bottom: 30px;
             padding: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            background-color: #fafafa;
         }
         .section h3 {
             margin-top: 0;
-            color: #666;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+            color: #333;
+            border-bottom: 2px solid #007acc;
+            padding-bottom: 5px;
         }
         button {
-            background-color: #4CAF50;
+            background-color: #007acc;
             color: white;
-            padding: 10px 15px;
             border: none;
+            padding: 10px 15px;
+            margin: 5px;
             border-radius: 4px;
             cursor: pointer;
-            margin: 5px;
             font-size: 14px;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #005999;
         }
-        button:active {
-            background-color: #3d8b40;
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
         }
-        input[type="text"], textarea {
+        .log-area {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        input, textarea {
             width: 100%;
             padding: 8px;
             margin: 5px 0;
@@ -61,469 +65,417 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
-        .result {
-            background-color: #e8f5e8;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-            border-left: 4px solid #4CAF50;
-            font-family: monospace;
-            white-space: pre-wrap;
-            max-height: 200px;
-            overflow-y: auto;
+        .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
         }
-        .error {
-            background-color: #ffe8e8;
-            border-left-color: #f44336;
-        }
-        .input-group {
-            margin: 10px 0;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
+        .status.success { background-color: #d4edda; color: #155724; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+        .status.info { background-color: #d1ecf1; color: #0c5460; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>SogouJSInterface 测试页面</h1>
-
-        <!-- 基础信息获取 -->
+        <h1>JSBridge 测试页面</h1>
+        
+        <!-- 腾讯视频调试桥接测试 -->
         <div class="section">
-            <h3>📱 基础信息获取</h3>
-            <button onclick="getBasicInfo()">获取基础信息</button>
-            <button onclick="getLoginState()">获取登录状态</button>
-            <button onclick="getUniqueId()">获取唯一ID</button>
-            <button onclick="getSogouAndroidId()">获取搜狗Android ID</button>
-            <button onclick="getQ36()">获取Q36</button>
-            <div id="basicInfoResult" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- 系统功能 -->
-        <div class="section">
-            <h3>🔧 系统功能</h3>
-            <div class="input-group">
-                <label>复制文本:</label>
-                <input type="text" id="clipboardText" placeholder="输入要复制的文本" value="Hello SogouJS!">
+            <h3>腾讯视频调试桥接 (sgBridge) <span id="sgStatus" class="status info">未检测</span></h3>
+            
+            <div>
+                <button onclick="testConnectionSuccess()">测试连接成功</button>
+                <button onclick="testUpdateResources()">更新资源列表</button>
+                <button onclick="testDebugConsole()">发送调试控制台消息</button>
+                <button onclick="testLogMessage()">发送日志消息</button>
             </div>
-            <button onclick="copyToClipboard()">复制到剪贴板</button>
-            <button onclick="requestClipboardText()">获取剪贴板内容</button>
-            <button onclick="showToast()">显示Toast</button>
-            <button onclick="getWebviewContentPadding()">获取WebView边距</button>
-            <div id="systemResult" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- 录音功能 -->
-        <div class="section">
-            <h3>🎤 录音功能</h3>
-            <button onclick="startRecord()">开始录音</button>
-            <button onclick="stopRecord()">停止录音</button>
-            <button onclick="cancelRecording()">取消录音</button>
-            <button onclick="getRecordFilePath()">获取录音文件路径</button>
-            <div class="input-group">
-                <label>录音配置 (JSON):</label>
-                <textarea id="recordConfig" rows="3">{"questionId": 1, "callback": "onRecordCallback"}</textarea>
-            </div>
-            <button onclick="startRecordingWithConfig()">开始录音(带配置)</button>
-            <button onclick="stopRecordingWithConfig()">停止录音(带配置)</button>
-            <div id="recordResult" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- 分享功能 -->
-        <div class="section">
-            <h3>📤 分享功能</h3>
-            <div class="input-group">
-                <label>分享标题:</label>
-                <input type="text" id="shareTitle" value="测试分享标题">
-            </div>
-            <div class="input-group">
-                <label>分享内容:</label>
-                <input type="text" id="shareContent" value="这是测试分享的内容">
-            </div>
-            <div class="input-group">
-                <label>分享链接:</label>
-                <input type="text" id="shareUrl" value="https://www.sogou.com">
-            </div>
-            <div class="input-group">
-                <label>分享图片URL:</label>
-                <input type="text" id="shareImgUrl" value="https://www.sogou.com/images/logo.png">
-            </div>
-            <button onclick="setShareInfo()">设置分享信息</button>
-            <button onclick="shareToApp()">分享到应用</button>
-            <button onclick="openShareWin()">打开分享窗口</button>
-            <div id="shareResult" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- 应用操作 -->
-        <div class="section">
-            <h3>📱 应用操作</h3>
-            <div class="input-group">
-                <label>应用包名:</label>
-                <input type="text" id="packageName" value="com.tencent.mm" placeholder="如: com.tencent.mm">
-            </div>
-            <button onclick="checkAppExist()">检查应用是否存在</button>
-            <button onclick="checkAppInstalled()">检查应用是否安装</button>
-            <button onclick="jumpToWeChat()">跳转到微信</button>
-            <button onclick="openAppWithScheme()">通过Scheme打开应用</button>
-            <div id="appResult" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- 登录功能 -->
-        <div class="section">
-            <h3>👤 登录功能</h3>
-            <div class="input-group">
-                <label>登录域名:</label>
-                <input type="text" id="loginDomain" value="sogou.com">
-            </div>
-            <button onclick="loginAccount()">登录账户</button>
-            <button onclick="loginByPhone()">手机号登录</button>
-            <button onclick="loginWithUnionPhone()">联合手机登录</button>
-            <button onclick="getPhoneNumber()">获取手机号</button>
-            <button onclick="didLogout()">登出</button>
-            <div id="loginResult" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- 页面控制 -->
-        <div class="section">
-            <h3>🎮 页面控制</h3>
-            <div class="input-group">
-                <label>标题文本:</label>
-                <input type="text" id="titleText" value="新的页面标题">
-            </div>
-            <button onclick="setTitleText()">设置标题</button>
-            <button onclick="goBack()">返回</button>
-            <button onclick="closePage()">关闭页面</button>
-            <button onclick="setEnableShare()">启用分享</button>
-            <button onclick="showHongrenTitlebar()">显示标题栏</button>
-            <div id="pageResult" class="result" style="display:none;"></div>
-        </div>
-
-        <!-- 网络请求 -->
-        <div class="section">
-            <h3>🌐 网络请求</h3>
-            <div class="input-group">
-                <label>请求URL:</label>
-                <input type="text" id="requestUrl" value="https://www.sogou.com/api/test">
-            </div>
-            <div class="input-group">
-                <label>请求方法:</label>
-                <select id="requestMethod">
-                    <option value="GET">GET</option>
-                    <option value="POST">POST</option>
+            
+            <div>
+                <input type="text" id="debugContent" placeholder="输入调试内容" value="Hello Debug Console">
+                <input type="text" id="logContent" placeholder="输入日志内容" value="This is a test log">
+                <select id="logLevel">
+                    <option value="info">Info</option>
+                    <option value="warn">Warning</option>
+                    <option value="error">Error</option>
+                    <option value="debug">Debug</option>
                 </select>
             </div>
-            <div class="input-group">
-                <label>请求参数 (JSON):</label>
-                <textarea id="requestParams" rows="3">{"key": "value"}</textarea>
-            </div>
-            <button onclick="clientRequest()">发送请求</button>
-            <div id="requestResult" class="result" style="display:none;"></div>
+            
+            <div class="log-area" id="sgBridgeLog">等待测试结果...</div>
         </div>
 
-        <!-- 其他功能 -->
+        <!-- 搜狗热词桥接测试 -->
         <div class="section">
-            <h3>🔍 其他功能</h3>
-            <button onclick="isGyroscopeEnable()">检查陀螺仪</button>
-            <button onclick="openSearchActivity()">打开搜索</button>
-            <button onclick="openMySuit()">打开我的套装</button>
-            <button onclick="openMyWallpaper()">打开我的壁纸</button>
-            <button onclick="searchSuit()">搜索套装</button>
-            <div id="otherResult" class="result" style="display:none;"></div>
+            <h3>搜狗热词桥接 <span id="sogouStatus" class="status info">未检测</span></h3>
+            
+            <div>
+                <button onclick="testInfo()">测试 Info</button>
+                <button onclick="testIsOffline()">测试离线状态</button>
+                <button onclick="testVersionCode()">获取版本号</button>
+                <button onclick="testVersionName()">获取版本名</button>
+                <button onclick="testWebIdentifier()">获取Web标识</button>
+            </div>
+            
+            <div>
+                <input type="text" id="appId" placeholder="输入 App ID" value="test_app_123">
+                <button onclick="testPingBack()">测试 PingBack</button>
+                <button onclick="testBeaconPing()">测试 BeaconPing</button>
+            </div>
+            
+            <div>
+                <input type="text" id="navigateUrl" placeholder="导航URL" value="https://www.sogou.com">
+                <button onclick="testNavigate()">测试导航</button>
+            </div>
+            
+            <div class="log-area" id="sogouLog">等待测试结果...</div>
+        </div>
+
+        <!-- 通用测试区域 -->
+        <div class="section">
+            <h3>自定义测试</h3>
+            <textarea id="customJson" rows="4" placeholder="输入自定义JSON消息">
+{
+    "cmd": "info",
+    "appid": "test_app",
+    "callback": "testCallback"
+}
+            </textarea>
+            <button onclick="sendCustomMessage()">发送自定义消息</button>
+            <div class="log-area" id="customLog">等待测试结果...</div>
+        </div>
+
+        <!-- 环境检测 -->
+        <div class="section">
+            <h3>环境检测</h3>
+            <button onclick="detectEnvironment()">检测JSBridge环境</button>
+            <div class="log-area" id="envLog">点击检测按钮查看环境信息...</div>
         </div>
     </div>
 
     <script>
-        // 全局回调函数
-        window.onRecordCallback = function(result) {
-            showResult('recordResult', '录音回调: ' + JSON.stringify(result));
-        };
-
-        window.onRequestCallback = function(result) {
-            showResult('requestResult', '请求回调: ' + JSON.stringify(result));
-        };
-
-        window.onShareCallback = function(result) {
-            showResult('shareResult', '分享回调: ' + JSON.stringify(result));
-        };
-
-        window.onClipboardCallback = function(result) {
-            showResult('systemResult', '剪贴板回调: ' + JSON.stringify(result));
-        };
-
-        window.onPaddingCallback = function(result) {
-            showResult('systemResult', 'WebView边距: ' + JSON.stringify(result));
-        };
-
-        function showResult(elementId, text, isError = false) {
+        // 日志输出函数
+        function log(elementId, message, type = 'info') {
             const element = document.getElementById(elementId);
-            element.style.display = 'block';
-            element.textContent = text;
-            element.className = isError ? 'result error' : 'result';
-        }
-
-        function callJSBridge(method, ...args) {
-            try {
-                if (window.SogouHotwordsUtils && typeof window.SogouHotwordsUtils[method] === 'function') {
-                    return window.SogouHotwordsUtils[method](...args);
-                } else {
-                    throw new Error(`方法 ${method} 不存在或不可用`);
-                }
-            } catch (error) {
-                console.error('调用JSBridge失败:', error);
-                return null;
-            }
-        }
-
-        // 基础信息获取
-        function getBasicInfo() {
-            const version = callJSBridge('getHotwordsSDKVersion');
-            const ua = callJSBridge('getHotwordsSDKUA');
-            showResult('basicInfoResult', `SDK版本: ${version}\nUA: ${ua}`);
-        }
-
-        function getLoginState() {
-            const state = callJSBridge('getLoginState', '');
-            showResult('basicInfoResult', `登录状态: ${state}`);
-        }
-
-        function getUniqueId() {
-            const id = callJSBridge('getUniqueId');
-            showResult('basicInfoResult', `唯一ID: ${id}`);
-        }
-
-        function getSogouAndroidId() {
-            const id = callJSBridge('getSogouAndroidId');
-            showResult('basicInfoResult', `搜狗Android ID: ${id}`);
-        }
-
-        function getQ36() {
-            const q36 = callJSBridge('getQ36');
-            showResult('basicInfoResult', `Q36: ${q36}`);
-        }
-
-        // 系统功能
-        function copyToClipboard() {
-            const text = document.getElementById('clipboardText').value;
-            callJSBridge('copyToClipboard', text);
-            showResult('systemResult', `已复制: ${text}`);
-        }
-
-        function requestClipboardText() {
-            callJSBridge('requestClipBoardText', 'onClipboardCallback');
-        }
-
-        function showToast() {
-            callJSBridge('showToast', '这是一个测试Toast', true);
-            showResult('systemResult', '已显示Toast');
-        }
-
-        function getWebviewContentPadding() {
-            callJSBridge('getWebviewContentPadding', 'onPaddingCallback');
-        }
-
-        // 录音功能
-        function startRecord() {
-            callJSBridge('startRecord');
-            showResult('recordResult', '开始录音');
-        }
-
-        function stopRecord() {
-            callJSBridge('stopRecord');
-            showResult('recordResult', '停止录音');
-        }
-
-        function cancelRecording() {
-            callJSBridge('cancelRecording');
-            showResult('recordResult', '取消录音');
-        }
-
-        function getRecordFilePath() {
-            callJSBridge('getRecordFilePath', 'onRecordCallback');
-        }
-
-        function startRecordingWithConfig() {
-            const config = document.getElementById('recordConfig').value;
-            callJSBridge('startRecording', config);
-            showResult('recordResult', '开始录音(配置): ' + config);
-        }
-
-        function stopRecordingWithConfig() {
-            const config = document.getElementById('recordConfig').value;
-            callJSBridge('stopRecording', config);
-            showResult('recordResult', '停止录音(配置): ' + config);
-        }
-
-        // 分享功能
-        function setShareInfo() {
-            const title = document.getElementById('shareTitle').value;
-            const content = document.getElementById('shareContent').value;
-            const url = document.getElementById('shareUrl').value;
-            const imgUrl = document.getElementById('shareImgUrl').value;
-
-            callJSBridge('setShareTitle', title);
-            callJSBridge('setShareContent', content);
-            callJSBridge('setShareContentUrl', url);
-            callJSBridge('setShareImgUrl', imgUrl);
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            element.textContent += logEntry;
+            element.scrollTop = element.scrollHeight;
             
-            showResult('shareResult', '已设置分享信息');
+            console.log(`${elementId}: ${message}`);
         }
 
-        function shareToApp() {
-            const title = document.getElementById('shareTitle').value;
-            const content = document.getElementById('shareContent').value;
-            const url = document.getElementById('shareUrl').value;
-            const imgUrl = document.getElementById('shareImgUrl').value;
+        // 清空日志
+        function clearLog(elementId) {
+            document.getElementById(elementId).textContent = '';
+        }
+
+        // 环境检测
+        function detectEnvironment() {
+            clearLog('envLog');
+            log('envLog', '开始检测JSBridge环境...');
             
-            callJSBridge('shareToApp', title, content, url, imgUrl);
-            showResult('shareResult', '分享到应用');
-        }
-
-        function openShareWin() {
-            const shareInfo = {
-                info: JSON.stringify({
-                    title: document.getElementById('shareTitle').value,
-                    content: document.getElementById('shareContent').value,
-                    url: document.getElementById('shareUrl').value,
-                    imgUrl: document.getElementById('shareImgUrl').value
-                }),
-                callback: 'onShareCallback'
-            };
-            callJSBridge('openShareWin', JSON.stringify(shareInfo));
-        }
-
-        // 应用操作
-        function checkAppExist() {
-            const packageName = document.getElementById('packageName').value;
-            const exists = callJSBridge('checkAppExist', packageName);
-            showResult('appResult', `应用 ${packageName} ${exists ? '存在' : '不存在'}`);
-        }
-
-        function checkAppInstalled() {
-            const packageName = document.getElementById('packageName').value;
-            callJSBridge('checkAppInstalled', packageName, 'onAppCheckCallback');
-        }
-
-        function jumpToWeChat() {
-            callJSBridge('jumpToWeChat');
-            showResult('appResult', '尝试跳转到微信');
-        }
-
-        function openAppWithScheme() {
-            const config = {
-                packageName: document.getElementById('packageName').value,
-                callback: 'onAppOpenCallback'
-            };
-            callJSBridge('openAppWithScheme', JSON.stringify(config));
-        }
-
-        // 登录功能
-        function loginAccount() {
-            const domain = document.getElementById('loginDomain').value;
-            callJSBridge('loginAccount', domain);
-            showResult('loginResult', `尝试登录域名: ${domain}`);
-        }
-
-        function loginByPhone() {
-            callJSBridge('loginByPhone');
-            showResult('loginResult', '尝试手机号登录');
-        }
-
-        function loginWithUnionPhone() {
-            const config = JSON.stringify({callback: 'onLoginCallback'});
-            callJSBridge('loginWithUnionPhone', config);
-        }
-
-        function getPhoneNumber() {
-            callJSBridge('getPhoneNumber', 'onPhoneNumberCallback');
-        }
-
-        function didLogout() {
-            callJSBridge('didLogout', 1);
-            showResult('loginResult', '已登出');
-        }
-
-        // 页面控制
-        function setTitleText() {
-            const title = document.getElementById('titleText').value;
-            callJSBridge('setTitleText', title);
-            showResult('pageResult', `设置标题: ${title}`);
-        }
-
-        function goBack() {
-            callJSBridge('goBack');
-            showResult('pageResult', '返回');
-        }
-
-        function closePage() {
-            callJSBridge('closePage');
-            showResult('pageResult', '关闭页面');
-        }
-
-        function setEnableShare() {
-            callJSBridge('setEnableShare', 1);
-            showResult('pageResult', '启用分享');
-        }
-
-        function showHongrenTitlebar() {
-            callJSBridge('showHongrenTitlebar', true);
-            showResult('pageResult', '显示标题栏');
-        }
-
-        // 网络请求
-        function clientRequest() {
-            const url = document.getElementById('requestUrl').value;
-            const method = document.getElementById('requestMethod').value;
-            const params = document.getElementById('requestParams').value;
-            
-            const requestConfig = {
-                url: url,
-                method: method,
-                postParams: params,
-                callback: 'onRequestCallback',
-                urlIgnoreSogouQq: false
-            };
-            
-            callJSBridge('clientRequest', JSON.stringify(requestConfig));
-            showResult('requestResult', '发送请求中...');
-        }
-
-        // 其他功能
-        function isGyroscopeEnable() {
-            const enabled = callJSBridge('isGyroscopeEnable');
-            showResult('otherResult', `陀螺仪${enabled ? '已启用' : '未启用'}`);
-        }
-
-        function openSearchActivity() {
-            callJSBridge('openSearchActivity', 0);
-            showResult('otherResult', '打开搜索界面');
-        }
-
-        function openMySuit() {
-            callJSBridge('openMySuit');
-            showResult('otherResult', '打开我的套装');
-        }
-
-        function openMyWallpaper() {
-            callJSBridge('openMyWallpaper');
-            showResult('otherResult', '打开我的壁纸');
-        }
-
-        function searchSuit() {
-            callJSBridge('searchSuit');
-            showResult('otherResult', '搜索套装');
-        }
-
-        // 页面加载完成后的初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('SogouJSInterface 测试页面已加载');
-            if (window.SogouHotwordsUtils) {
-                console.log('JSBridge 可用');
+            // 检测sgBridge
+            if (window.sgBridge && typeof window.sgBridge.postMessage === 'function') {
+                log('envLog', '✓ sgBridge 可用');
+                document.getElementById('sgStatus').textContent = '可用';
+                document.getElementById('sgStatus').className = 'status success';
             } else {
-                console.log('JSBridge 不可用，请在搜狗输入法环境中测试');
+                log('envLog', '✗ sgBridge 不可用');
+                document.getElementById('sgStatus').textContent = '不可用';
+                document.getElementById('sgStatus').className = 'status error';
             }
-        });
+            
+            // 检测其他可能的桥接对象
+            const bridges = ['sogouBridge', 'nativeBridge', 'webkit', 'android'];
+            bridges.forEach(bridge => {
+                if (window[bridge]) {
+                    log('envLog', `✓ 发现桥接对象: ${bridge}`);
+                } else {
+                    log('envLog', `✗ 未发现桥接对象: ${bridge}`);
+                }
+            });
+            
+            // 检测User Agent
+            log('envLog', `User Agent: ${navigator.userAgent}`);
+            
+            // 检测回调函数
+            log('envLog', '注册全局回调函数...');
+            window.testCallback = function(result) {
+                log('sogouLog', `回调函数被调用: ${JSON.stringify(result)}`);
+            };
+        }
+
+        // 腾讯视频调试桥接测试函数
+        function testConnectionSuccess() {
+            if (!window.sgBridge) {
+                log('sgBridgeLog', 'sgBridge 不可用', 'error');
+                return;
+            }
+            
+            const message = {
+                category: "request",
+                body: {
+                    cmd: "connectionSuccess",
+                    data: {
+                        brand: "TestBrand"
+                    }
+                }
+            };
+            
+            log('sgBridgeLog', `发送连接成功消息: ${JSON.stringify(message)}`);
+            try {
+                window.sgBridge.postMessage(JSON.stringify(message));
+                log('sgBridgeLog', '连接成功消息已发送');
+            } catch (e) {
+                log('sgBridgeLog', `发送失败: ${e.message}`, 'error');
+            }
+        }
+
+        function testUpdateResources() {
+            if (!window.sgBridge) {
+                log('sgBridgeLog', 'sgBridge 不可用', 'error');
+                return;
+            }
+            
+            const message = {
+                category: "request",
+                body: {
+                    cmd: "updateLoadedResources",
+                    data: {
+                        content: [
+                            {
+                                type: "js",
+                                id: "test_resource_1",
+                                version: "1.0.0",
+                                isTemp: false
+                            },
+                            {
+                                type: "css",
+                                id: "test_resource_2", 
+                                version: "1.2.0",
+                                isTemp: true
+                            }
+                        ]
+                    }
+                }
+            };
+            
+            log('sgBridgeLog', `发送资源更新消息: ${JSON.stringify(message)}`);
+            try {
+                window.sgBridge.postMessage(JSON.stringify(message));
+                log('sgBridgeLog', '资源更新消息已发送');
+            } catch (e) {
+                log('sgBridgeLog', `发送失败: ${e.message}`, 'error');
+            }
+        }
+
+        function testDebugConsole() {
+            if (!window.sgBridge) {
+                log('sgBridgeLog', 'sgBridge 不可用', 'error');
+                return;
+            }
+            
+            const content = document.getElementById('debugContent').value;
+            const message = {
+                category: "request",
+                body: {
+                    cmd: "appendDebugConsole",
+                    data: {
+                        content: content
+                    }
+                }
+            };
+            
+            log('sgBridgeLog', `发送调试控制台消息: ${JSON.stringify(message)}`);
+            try {
+                window.sgBridge.postMessage(JSON.stringify(message));
+                log('sgBridgeLog', '调试控制台消息已发送');
+            } catch (e) {
+                log('sgBridgeLog', `发送失败: ${e.message}`, 'error');
+            }
+        }
+
+        function testLogMessage() {
+            if (!window.sgBridge) {
+                log('sgBridgeLog', 'sgBridge 不可用', 'error');
+                return;
+            }
+            
+            const content = document.getElementById('logContent').value;
+            const level = document.getElementById('logLevel').value;
+            const message = {
+                category: "request", 
+                body: {
+                    cmd: "appendLog",
+                    data: {
+                        text: content,
+                        level: level
+                    }
+                }
+            };
+            
+            log('sgBridgeLog', `发送日志消息: ${JSON.stringify(message)}`);
+            try {
+                window.sgBridge.postMessage(JSON.stringify(message));
+                log('sgBridgeLog', '日志消息已发送');
+            } catch (e) {
+                log('sgBridgeLog', `发送失败: ${e.message}`, 'error');
+            }
+        }
+
+        // 搜狗热词桥接测试函数（这些需要通过原生代码模拟调用）
+        function testInfo() {
+            const appId = document.getElementById('appId').value;
+            const message = {
+                cmd: "info",
+                appid: appId
+            };
+            
+            log('sogouLog', `测试 Info: ${JSON.stringify(message)}`);
+            // 由于这些是原生处理的，我们只能模拟发送
+            simulateNativeCall('info', message);
+        }
+
+        function testIsOffline() {
+            const message = {
+                cmd: "isOffline",
+                callback: "testCallback"
+            };
+            
+            log('sogouLog', `测试离线状态: ${JSON.stringify(message)}`);
+            simulateNativeCall('isOffline', message);
+        }
+
+        function testVersionCode() {
+            const message = {
+                cmd: "versionCode",
+                callback: "testCallback"
+            };
+            
+            log('sogouLog', `获取版本号: ${JSON.stringify(message)}`);
+            simulateNativeCall('versionCode', message);
+        }
+
+        function testVersionName() {
+            const message = {
+                cmd: "versionName", 
+                callback: "testCallback"
+            };
+            
+            log('sogouLog', `获取版本名: ${JSON.stringify(message)}`);
+            simulateNativeCall('versionName', message);
+        }
+
+        function testWebIdentifier() {
+            const message = {
+                cmd: "webIdentifier",
+                callback: "testCallback"
+            };
+            
+            log('sogouLog', `获取Web标识: ${JSON.stringify(message)}`);
+            simulateNativeCall('webIdentifier', message);
+        }
+
+        function testPingBack() {
+            const message = {
+                cmd: "pingback",
+                data: {
+                    url: "https://api.example.com/pingback",
+                    params: {
+                        action: "test",
+                        timestamp: Date.now()
+                    }
+                },
+                callback: "testCallback"
+            };
+            
+            log('sogouLog', `测试 PingBack: ${JSON.stringify(message)}`);
+            simulateNativeCall('pingback', message);
+        }
+
+        function testBeaconPing() {
+            const message = {
+                cmd: "beaconPing",
+                data: {
+                    url: "https://api.example.com/beacon",
+                    data: "test_beacon_data"
+                },
+                callback: "testCallback"
+            };
+            
+            log('sogouLog', `测试 BeaconPing: ${JSON.stringify(message)}`);
+            simulateNativeCall('beaconPing', message);
+        }
+
+        function testNavigate() {
+            const url = document.getElementById('navigateUrl').value;
+            const message = {
+                cmd: "navigate",
+                url: url,
+                callback: "testCallback"
+            };
+            
+            log('sogouLog', `测试导航: ${JSON.stringify(message)}`);
+            simulateNativeCall('navigate', message);
+        }
+
+        // 模拟原生调用
+        function simulateNativeCall(cmd, message) {
+            log('sogouLog', `模拟原生调用 ${cmd}，实际应用中需要原生代码处理`);
+            
+            // 模拟一些回调响应
+            setTimeout(() => {
+                switch(cmd) {
+                    case 'versionCode':
+                        window.testCallback && window.testCallback({code: 0, data: {versionCode: 123456}});
+                        break;
+                    case 'versionName':
+                        window.testCallback && window.testCallback({code: 0, data: {versionName: "1.2.3"}});
+                        break;
+                    case 'isOffline':
+                        window.testCallback && window.testCallback(0); // 0表示在线
+                        break;
+                    case 'webIdentifier':
+                        window.testCallback && window.testCallback({code: 0, data: {identifier: "web_123456"}});
+                        break;
+                    default:
+                        window.testCallback && window.testCallback({code: 0, message: "success"});
+                }
+            }, 1000);
+        }
+
+        function sendCustomMessage() {
+            try {
+                const customJson = document.getElementById('customJson').value;
+                const message = JSON.parse(customJson);
+                
+                log('customLog', `发送自定义消息: ${JSON.stringify(message)}`);
+                
+                if (window.sgBridge && message.category) {
+                    // 发送到sgBridge
+                    window.sgBridge.postMessage(JSON.stringify(message));
+                    log('customLog', '已通过 sgBridge 发送');
+                } else {
+                    // 模拟发送到搜狗桥接
+                    simulateNativeCall(message.cmd, message);
+                    log('customLog', '已模拟发送到搜狗桥接');
+                }
+            } catch (e) {
+                log('customLog', `解析JSON失败: ${e.message}`, 'error');
+            }
+        }
+
+        // 全局回调函数
+        window.testCallback = function(result) {
+            log('sogouLog', `收到回调: ${JSON.stringify(result)}`);
+        };
+
+        // 页面加载完成后自动检测环境
+        window.onload = function() {
+            detectEnvironment();
+        };
     </script>
 </body>
 </html>
