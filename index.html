@@ -3,908 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>音乐客户端JS API测试工具</title>
+    <title>Cookie 查看器</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
         }
-        
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(45deg, #ff6b6b, #feca57);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        
-        .tabs {
-            display: flex;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .tab {
-            flex: 1;
-            padding: 15px 20px;
-            text-align: center;
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .tab.active {
-            background: white;
-            color: #007bff;
-            border-bottom: 3px solid #007bff;
-        }
-        
-        .tab:hover {
-            background: #e9ecef;
-        }
-        
-        .content {
-            padding: 30px;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .function-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .function-card {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 10px;
             padding: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .function-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        
-        .function-title {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .function-desc {
-            color: #666;
-            margin-bottom: 15px;
-            font-size: 0.9em;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 12px 20px;
-            border: none;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s;
-            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
-        }
-        
-        .btn-success {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
-        }
-        
-        .btn-warning {
-            background: linear-gradient(45deg, #ffc107, #fd7e14);
-            color: #212529;
-        }
-        
-        .btn-info {
-            background: linear-gradient(45deg, #17a2b8, #6f42c1);
-            color: white;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(45deg, #dc3545, #e83e8c);
-            color: white;
-        }
-        
-        .log-container {
-            background: #1e1e1e;
-            color: #00ff00;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-        }
-        
-        .log-item {
-            margin-bottom: 10px;
-            padding: 8px;
-            border-left: 3px solid #00ff00;
-            padding-left: 15px;
-        }
-        
-        .log-time {
-            color: #888;
-            font-size: 12px;
-        }
-        
-        .log-success {
-            border-left-color: #28a745;
-            background: rgba(40, 167, 69, 0.1);
-        }
-        
-        .log-error {
-            border-left-color: #dc3545;
-            color: #ff6b6b;
-            background: rgba(220, 53, 69, 0.1);
-        }
-        
-        .log-info {
-            border-left-color: #17a2b8;
-            color: #17a2b8;
-            background: rgba(23, 162, 184, 0.1);
-        }
-        
-        .object-display {
+        .cookie-item {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            max-height: 500px;
-            overflow-y: auto;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
         }
-        
-        .key-item {
-            padding: 8px 12px;
-            margin: 5px 0;
-            background: white;
-            border-radius: 5px;
-            border-left: 4px solid #007bff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .key-name {
+        .cookie-name {
             font-weight: bold;
-            color: #0066cc;
+            color: #007bff;
         }
-        
-        .key-type {
-            background: #e9ecef;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            color: #666;
+        .cookie-value {
+            color: #28a745;
+            word-break: break-all;
         }
-        
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
+        .no-cookies {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
         }
-        
-        .status-available {
-            background: #28a745;
-        }
-        
-        .status-unavailable {
-            background: #dc3545;
-        }
-        
-        .clear-btn {
-            background: #6c757d;
+        button {
+            background: #007bff;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 4px;
             cursor: pointer;
-            float: right;
-            margin-bottom: 10px;
+            margin: 10px 5px;
         }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-        }
-        
-        .stat-label {
-            opacity: 0.9;
-            margin-top: 5px;
+        button:hover {
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 头部 -->
-        <div class="header">
-            <h1>🎵 音乐客户端API测试工具</h1>
-            <p>测试所有音乐客户端JavaScript接口功能</p>
+        <h1>🍪 Cookie 查看器</h1>
+        <div>
+            <button onclick="displayCookies()">刷新Cookie</button>
+            <button onclick="setCookieExample()">设置示例Cookie</button>
+            <button onclick="clearAllCookies()">清除所有Cookie</button>
         </div>
         
-        <!-- 选项卡 -->
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('functions')">🔧 功能测试</button>
-            <button class="tab" onclick="switchTab('webclients')">📱 WebClient检查</button>
-            <button class="tab" onclick="switchTab('logs')">📝 执行日志</button>
+        <h2>当前页面的 Cookies:</h2>
+        <div id="cookieContainer">
+            <!-- Cookie内容将在这里显示 -->
         </div>
         
-        <!-- 内容区域 -->
-        <div class="content">
-            <!-- 功能测试选项卡 -->
-            <div id="functions" class="tab-content active">
-                <div class="function-grid">
-                    <!-- 导航功能 -->
-                    <div class="function-card">
-                        <div class="function-title">🔙 导航功能</div>
-                        <div class="function-desc">页面导航和跳转相关功能</div>
-                        <button class="btn btn-primary" onclick="testGoBack()">返回上页</button>
-                        <button class="btn btn-primary" onclick="testOpenVipActivity()">打开VIP页面</button>
-                        <button class="btn btn-primary" onclick="testOpenPushMessage()">消息中心</button>
-                        <button class="btn btn-primary" onclick="testOpenSecondChannel()">小说频道</button>
-                        <button class="btn btn-primary" onclick="testOpenMineScreen()">我的页面</button>
-                    </div>
-                    
-                    <!-- 音乐播放 -->
-                    <div class="function-card">
-                        <div class="function-title">🎵 音乐播放</div>
-                        <div class="function-desc">播放单曲和歌单功能</div>
-                        <button class="btn btn-success" onclick="testPlayMusic()">播放音乐列表</button>
-                        <button class="btn btn-success" onclick="testPlayMusicList()">播放指定歌单</button>
-                    </div>
-                    
-                    <!-- 收藏功能 -->
-                    <div class="function-card">
-                        <div class="function-title">❤️ 收藏功能</div>
-                        <div class="function-desc">收藏单首歌曲或批量收藏</div>
-                        <button class="btn btn-warning" onclick="testFavoriteMusic()">收藏单首歌曲</button>
-                        <button class="btn btn-warning" onclick="testFavoriteMusicList()">批量收藏歌曲</button>
-                    </div>
-                    
-                    <!-- 歌单管理 -->
-                    <div class="function-card">
-                        <div class="function-title">📝 歌单管理</div>
-                        <div class="function-desc">创建和管理歌单功能</div>
-                        <button class="btn btn-info" onclick="testCreateNormalPlaylist()">创建普通歌单</button>
-                        <button class="btn btn-info" onclick="testCreateYearPlaylist()">创建年度歌单</button>
-                        <button class="btn btn-info" onclick="testUpdatePlaylist()">更新歌单</button>
-                    </div>
-                    
-                    <!-- 分享功能 -->
-                    <div class="function-card">
-                        <div class="function-title">📤 分享功能</div>
-                        <div class="function-desc">分享链接和图片功能</div>
-                        <button class="btn btn-danger" onclick="testShare()">分享链接</button>
-                        <button class="btn btn-danger" onclick="testSharePic()">分享图片</button>
-                        <button class="btn btn-danger" onclick="testSharePicDownload()">下载图片</button>
-                    </div>
-                    
-                    <!-- 其他功能 -->
-                    <div class="function-card">
-                        <div class="function-title">🔔 其他功能</div>
-                        <div class="function-desc">Toast提示等辅助功能</div>
-                        <button class="btn btn-primary" onclick="testToast()">显示Toast</button>
-                        <button class="btn btn-success" onclick="testAllFunctions()">🚀 测试所有功能</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- WebClient检查选项卡 -->
-            <div id="webclients" class="tab-content">
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="iMusicCount">0</div>
-                        <div class="stat-label">iMusicWebClient 属性</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="aiTingCount">0</div>
-                        <div class="stat-label">aiTingWebClient 属性</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalApiCount">0</div>
-                        <div class="stat-label">总API数量</div>
-                    </div>
-                </div>
-                
-                <button class="btn btn-primary" onclick="checkWebClients()" style="width: 200px; margin-bottom: 20px;">
-                    🔍 检查WebClient对象
-                </button>
-                
-                <div id="webClientResults"></div>
-            </div>
-            
-            <!-- 执行日志选项卡 -->
-            <div id="logs" class="tab-content">
-                <button class="clear-btn" onclick="clearLogs()">清空日志</button>
-                <div class="log-container" id="logContainer">
-                    <div class="log-item log-info">
-                        <div class="log-time">[页面加载]</div>
-                        <div>音乐客户端API测试工具已准备就绪</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h2>原始 Cookie 字符串:</h2>
+        <textarea id="rawCookie" readonly style="width: 100%; height: 100px; font-family: monospace;"></textarea>
     </div>
 
     <script>
-        // ============ 核心API函数 ============
-        function musicCallClient (funName, params, callback) {
-            return new Promise((resolve, reject) => {
-                if (params && typeof params === 'object') {
-                    let callbackName = params['callbackFunction']
-                    if (callbackName) {
-                        window[callbackName] = function (data) {
-                            if (!data) {
-                                data = {
-                                    code: 1
-                                }
-                            }
-                            if (typeof callback === 'function') {
-                                callback(data)
-                            }
-                            resolve(data)
-                        }
-                    } else {
-                        resolve({
-                            code: 1
-                        })
-                    }
+        // 显示所有cookies
+        function displayCookies() {
+            const cookieContainer = document.getElementById('cookieContainer');
+            const rawCookieTextarea = document.getElementById('rawCookie');
+            
+            // 获取原始cookie字符串
+            const cookieString = document.cookie;
+            rawCookieTextarea.value = cookieString || '(没有Cookie)';
+            
+            // 清空容器
+            cookieContainer.innerHTML = '';
+            
+            if (!cookieString) {
+                cookieContainer.innerHTML = '<div class="no-cookies">当前页面没有Cookie</div>';
+                return;
+            }
+            
+            // 解析cookies
+            const cookies = cookieString.split(';');
+            
+            cookies.forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (name) {
+                    const cookieDiv = document.createElement('div');
+                    cookieDiv.className = 'cookie-item';
+                    cookieDiv.innerHTML = `
+                        <div class="cookie-name">名称: ${name}</div>
+                        <div class="cookie-value">值: ${value || '(空值)'}</div>
+                    `;
+                    cookieContainer.appendChild(cookieDiv);
                 }
-                try {
-                    logMessage(`调用API: ${funName}`, 'info');
-                    logMessage(`参数: ${JSON.stringify(params, null, 2)}`, 'info');
-                    
-                    if (window.iMusicWebClient && window.iMusicWebClient.invokeLocal) {
-                        window.iMusicWebClient.invokeLocal(funName, JSON.stringify(params))
-                        logMessage(`✅ ${funName} 调用成功`, 'success');
-                    } else {
-                        logMessage(`❌ iMusicWebClient 不可用`, 'error');
-                        reject(new Error('iMusicWebClient not available'));
-                    }
-                } catch (error) {
-                    logMessage(`❌ ${funName} 调用失败: ${error.message}`, 'error');
-                    console.log(error)
-                    reject(error)
-                }
-            })
-        }
-
-        // ============ 具体功能函数 ============
-        function goBack() {
-            return musicCallClient('goBack', {param: '', activityId: '', callbackFunction: ''})
-        }
-
-        function openVipActivity() {
-            let params = {pageName:'open_vip'}
-            return musicCallClient('startActivity', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function openPushMessage() {
-            let params = {pageName:'common', flag:'/app/activity/PushMessageCenterActivity'}
-            return musicCallClient('startActivity', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function openSecondChannel() {
-            let dataJson = [{type:'I', key:'second_data_type', value:'600'}, {type:'S', key:'second_category_id', value:'2'},{type:'S', key:'second_channel_title', value:'小说'}]
-            let params = {pageName:'common', flag:'/audiobook/activity/SecondChannelActivity', data: JSON.stringify(dataJson)}
-            return musicCallClient('startActivity', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function openMineScreen() {
-            let params = {pageName:'main', data: "3"}
-            return musicCallClient('startActivity', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function favoriteMusic() {
-            let params = {vivoId:'670097701'}
-            return musicCallClient('setFavourite', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function favoriteMusicList() {
-            let params = {vivoIds:['670097701','661654902','684947133']}
-            return musicCallClient('setFavourite', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function createNormalPlaylist() {
-            let params = {vivoIds:['670097701','684947133','661654902'], name:'测试歌单', type:1}
-            return musicCallClient('playlistEvent', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function createYearPlaylist() {
-            let params = {vivoIds:['670097701','661654902','684947133'], type:1}
-            return musicCallClient('playlistEvent', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function updatePlaylist() {
-            let params = {type:2}
-            return musicCallClient('playlistEvent', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function playMusic() {
-            let params = {songIdList:[{vivoId:'670097701'}, {vivoId:'661654902'}, {vivoId:'684947133'}], showPlayActivity:true, position:'1'}
-            return musicCallClient('playMusic', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function playMusicList() {
-            let params = {id:'85991959', showPlayActivity:true, position:'1', songListType:'2'}
-            return musicCallClient('playMusicList', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function share() {
-            let params = {picUrl:'https://wwwstatic.vivo.com.cn/vivoportal/files/image/home/20221020/21539fc062299703e2ff758820f6f4a5.jpg', title:'我的测试', url:'https://www.vivo.com/', msg:'测试msg'}
-            return musicCallClient('share', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function sharePic() {
-            let params = {picUrl:'https://wwwstatic.vivo.com.cn/vivoportal/files/image/home/20221020/21539fc062299703e2ff758820f6f4a5.jpg', picName:'我的测试', onlyDownload:false}
-            return musicCallClient('sharePic', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function sharePicDownload() {
-            let params = {picUrl:'https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz', picName:'3333.jpg', onlyDownload:true}
-            return musicCallClient('sharePic', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        function toast() {
-            let params = {msg:'i am toast'}
-            return musicCallClient('showToast', {param: JSON.stringify(params), activityId: '', callbackFunction: ''})
-        }
-
-        // ============ 测试函数 ============
-        async function testGoBack() {
-            try {
-                await goBack();
-            } catch (e) {
-                logMessage(`goBack 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testOpenVipActivity() {
-            try {
-                await openVipActivity();
-            } catch (e) {
-                logMessage(`openVipActivity 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testOpenPushMessage() {
-            try {
-                await openPushMessage();
-            } catch (e) {
-                logMessage(`openPushMessage 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testOpenSecondChannel() {
-            try {
-                await openSecondChannel();
-            } catch (e) {
-                logMessage(`openSecondChannel 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testOpenMineScreen() {
-            try {
-                await openMineScreen();
-            } catch (e) {
-                logMessage(`openMineScreen 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testPlayMusic() {
-            try {
-                await playMusic();
-            } catch (e) {
-                logMessage(`playMusic 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testPlayMusicList() {
-            try {
-                await playMusicList();
-            } catch (e) {
-                logMessage(`playMusicList 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testFavoriteMusic() {
-            try {
-                await favoriteMusic();
-            } catch (e) {
-                logMessage(`favoriteMusic 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testFavoriteMusicList() {
-            try {
-                await favoriteMusicList();
-            } catch (e) {
-                logMessage(`favoriteMusicList 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testCreateNormalPlaylist() {
-            try {
-                await createNormalPlaylist();
-            } catch (e) {
-                logMessage(`createNormalPlaylist 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testCreateYearPlaylist() {
-            try {
-                await createYearPlaylist();
-            } catch (e) {
-                logMessage(`createYearPlaylist 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testUpdatePlaylist() {
-            try {
-                await updatePlaylist();
-            } catch (e) {
-                logMessage(`updatePlaylist 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testShare() {
-            try {
-                await share();
-            } catch (e) {
-                logMessage(`share 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testSharePic() {
-            try {
-                await sharePic();
-            } catch (e) {
-                logMessage(`sharePic 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testSharePicDownload() {
-            try {
-                await sharePicDownload();
-            } catch (e) {
-                logMessage(`sharePicDownload 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testToast() {
-            try {
-                await toast();
-            } catch (e) {
-                logMessage(`toast 测试失败: ${e.message}`, 'error');
-            }
-        }
-
-        async function testAllFunctions() {
-            logMessage('🚀 开始执行所有功能测试...', 'info');
-            
-            const tests = [
-                { name: '返回上页', func: testGoBack },
-                { name: 'VIP页面', func: testOpenVipActivity },
-                { name: '消息中心', func: testOpenPushMessage },
-                { name: '小说频道', func: testOpenSecondChannel },
-                { name: '我的页面', func: testOpenMineScreen },
-                { name: '播放音乐', func: testPlayMusic },
-                { name: '播放歌单', func: testPlayMusicList },
-                { name: '收藏单曲', func: testFavoriteMusic },
-                { name: '批量收藏', func: testFavoriteMusicList },
-                { name: '创建歌单', func: testCreateNormalPlaylist },
-                { name: '年度歌单', func: testCreateYearPlaylist },
-                { name: '更新歌单', func: testUpdatePlaylist },
-                { name: '分享链接', func: testShare },
-                { name: '分享图片', func: testSharePic },
-                { name: '下载图片', func: testSharePicDownload },
-                { name: '显示Toast', func: testToast }
-            ];
-
-            for (let i = 0; i < tests.length; i++) {
-                const test = tests[i];
-                logMessage(`[${i + 1}/${tests.length}] 测试: ${test.name}`, 'info');
-                
-                try {
-                    await test.func();
-                    await new Promise(resolve => setTimeout(resolve, 500)); // 延迟500ms
-                } catch (e) {
-                    logMessage(`${test.name} 测试异常: ${e.message}`, 'error');
-                }
-            }
-            
-            logMessage('✅ 所有功能测试完成!', 'success');
-        }
-
-        // ============ WebClient检查功能 ============
-        function checkWebClients() {
-            logMessage('🔍 开始检查WebClient对象...', 'info');
-            
-            const results = document.getElementById('webClientResults');
-            let html = '';
-            
-            // 检查 iMusicWebClient
-            html += '<h3>📱 iMusicWebClient 对象分析</h3>';
-            const iMusicStatus = checkObject('iMusicWebClient', window.iMusicWebClient);
-            html += iMusicStatus.html;
-            document.getElementById('iMusicCount').textContent = iMusicStatus.count;
-            
-            // 检查 aiTingWebClient
-            html += '<h3>🤖 aiTingWebClient 对象分析</h3>';
-            const aiTingStatus = checkObject('aiTingWebClient', window.aiTingWebClient);
-            html += aiTingStatus.html;
-            document.getElementById('aiTingCount').textContent = aiTingStatus.count;
-            
-            // 更新总数
-            const totalCount = iMusicStatus.count + aiTingStatus.count;
-            document.getElementById('totalApiCount').textContent = totalCount;
-            
-            results.innerHTML = html;
-            
-            logMessage(`检查完成: iMusicWebClient(${iMusicStatus.count}个属性), aiTingWebClient(${aiTingStatus.count}个属性)`, 'success');
-        }
-
-        function checkObject(name, obj) {
-            let html = '';
-            let count = 0;
-            
-            if (typeof obj === 'undefined') {
-                html += `<div class="object-display">
-                    <div style="color: #dc3545; text-align: center; padding: 20px;">
-                        <span class="status-indicator status-unavailable"></span>
-                        ${name} 对象不存在
-                    </div>
-                </div>`;
-                logMessage(`❌ ${name} 对象不存在`, 'error');
-                return { html, count: 0 };
-            }
-
-            if (obj === null) {
-                html += `<div class="object-display">
-                    <div style="color: #dc3545; text-align: center; padding: 20px;">
-                        <span class="status-indicator status-unavailable"></span>
-                        ${name} 对象为 null
-                    </div>
-                </div>`;
-                logMessage(`❌ ${name} 对象为 null`, 'error');
-                return { html, count: 0 };
-            }
-
-            logMessage(`✅ ${name} 对象可用`, 'success');
-            
-            html += `<div class="object-display">
-                <div style="color: #28a745; margin-bottom: 15px;">
-                    <span class="status-indicator status-available"></span>
-                    ${name} 对象可用，包含以下属性和方法：
-                </div>`;
-
-            try {
-                // 获取所有属性
-                const allKeys = [];
-                
-                // 获取自身属性
-                for (let key in obj) {
-                    if (!allKeys.includes(key)) {
-                        allKeys.push(key);
-                    }
-                }
-                
-                // 获取不可枚举属性
-                try {
-                    const ownProps = Object.getOwnPropertyNames(obj);
-                    ownProps.forEach(prop => {
-                        if (!allKeys.includes(prop)) {
-                            allKeys.push(prop);
-                        }
-                    });
-                } catch (e) {
-                    console.warn(`无法获取 ${name} 的 getOwnPropertyNames:`, e);
-                }
-                
-                allKeys.sort();
-                count = allKeys.length;
-                
-                if (allKeys.length === 0) {
-                    html += '<div style="color: #ffc107; text-align: center;">该对象没有可访问的属性</div>';
-                } else {
-                    allKeys.forEach((key, index) => {
-                        try {
-                            const value = obj[key];
-                            const type = typeof value;
-                            const valueStr = getValueString(value, type);
-                            
-                            html += `<div class="key-item">
-                                <span class="key-name">${index + 1}. ${key}</span>
-                                <div>
-                                    <span class="key-type">${type}</span>
-                                    <div style="font-size: 12px; color: #666; margin-top: 5px;">${valueStr}</div>
-                                </div>
-                            </div>`;
-                        } catch (e) {
-                            html += `<div class="key-item">
-                                <span class="key-name">${index + 1}. ${key}</span>
-                                <div>
-                                    <span class="key-type">error</span>
-                                    <div style="font-size: 12px; color: #dc3545; margin-top: 5px;">[无法访问: ${e.message}]</div>
-                                </div>
-                            </div>`;
-                        }
-                    });
-                }
-            } catch (e) {
-                html += `<div style="color: #dc3545;">检查对象时发生错误: ${e.message}</div>`;
-                logMessage(`❌ 检查 ${name} 时发生错误: ${e.message}`, 'error');
-            }
-            
-            html += '</div>';
-            return { html, count };
-        }
-
-        function getValueString(value, type) {
-            try {
-                switch (type) {
-                    case 'function':
-                        const funcStr = value.toString();
-                        const match = funcStr.match(/^function\s*([^(]*)\s*\(([^)]*)\)/);
-                        if (match) {
-                            const name = match[1] || 'anonymous';
-                            const params = match[2] || '';
-                            return `function ${name}(${params})`;
-                        }
-                        return `[Function: ${value.name || 'anonymous'}]`;
-                    case 'object':
-                        if (value === null) return 'null';
-                        if (Array.isArray(value)) return `[Array: ${value.length} items]`;
-                        if (value.constructor) return `[Object: ${value.constructor.name}]`;
-                        return '[Object]';
-                    case 'string':
-                        return value.length > 50 ? `"${value.substring(0, 50)}..."` : `"${value}"`;
-                    case 'number':
-                    case 'boolean':
-                        return String(value);
-                    case 'undefined':
-                        return 'undefined';
-                    default:
-                        const str = String(value);
-                        return str.length > 50 ? str.substring(0, 50) + '...' : str;
-                }
-            } catch (e) {
-                return '[无法转换为字符串]';
-            }
-        }
-
-        // ============ UI控制函数 ============
-        function switchTab(tabName) {
-            // 移除所有活动状态
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
             });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
+        }
+        
+        // 设置示例cookie
+        function setCookieExample() {
+            const now = new Date();
+            const expires = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24小时后过期
+            
+            document.cookie = `example_cookie=${now.getTime()}; expires=${expires.toUTCString()}; path=/`;
+            document.cookie = `user_name=张三; expires=${expires.toUTCString()}; path=/`;
+            document.cookie = `session_id=abc123def456; expires=${expires.toUTCString()}; path=/`;
+            
+            alert('已设置示例Cookie!');
+            displayCookies();
+        }
+        
+        // 清除所有cookies (注意：只能清除当前域名下的cookie)
+        function clearAllCookies() {
+            const cookies = document.cookie.split(';');
+            
+            cookies.forEach(cookie => {
+                const eqPos = cookie.indexOf('=');
+                const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                // 设置过期时间为过去的时间来删除cookie
+                document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
             });
             
-            // 激活选中的标签页
-            event.target.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
+            alert('已尝试清除所有Cookie!');
+            displayCookies();
         }
-
-        function logMessage(message, type = 'info') {
-            const logContainer = document.getElementById('logContainer');
-            const time = new Date().toLocaleTimeString();
-            
-            const logItem = document.createElement('div');
-            logItem.className = `log-item log-${type}`;
-            logItem.innerHTML = `
-                <div class="log-time">[${time}]</div>
-                <div>${message}</div>
-            `;
-            
-            logContainer.appendChild(logItem);
-            logContainer.scrollTop = logContainer.scrollHeight;
-            
-            // 同时输出到控制台
-            console.log(`[${time}] ${message}`);
-        }
-
-        function clearLogs() {
-            const logContainer = document.getElementById('logContainer');
-            logContainer.innerHTML = `
-                <div class="log-item log-info">
-                    <div class="log-time">[${new Date().toLocaleTimeString()}]</div>
-                    <div>日志已清空</div>
-                </div>
-            `;
-        }
-
-        // ============ 页面初始化 ============
+        
+        // 页面加载时显示cookies
         window.onload = function() {
-            logMessage('🎵 音乐客户端API测试工具加载完成', 'success');
-            
-            // 自动检查WebClient对象
-            setTimeout(checkWebClients, 1000);
-            
-            // 输出到控制台供调试使用
-            console.log('=== 音乐客户端API测试工具 ===');
-            console.log('iMusicWebClient:', window.iMusicWebClient);
-            console.log('aiTingWebClient:', window.aiTingWebClient);
-            console.log('所有测试函数已加载完成');
+            displayCookies();
         };
+        
+        // 每5秒自动刷新一次（可选）
+        // setInterval(displayCookies, 5000);
     </script>
 </body>
 </html>
