@@ -44,6 +44,22 @@
             opacity: 0.9;
         }
         
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: #51cf66;
+        }
+        
+        .status-offline {
+            background: #ff6b6b;
+        }
+        
         .content {
             padding: 30px;
         }
@@ -182,28 +198,6 @@
             background: #cce5ff;
             border-color: #99d6ff;
             color: #004085;
-        }
-        
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        
-        .status-online {
-            background: #51cf66;
-        }
-        
-        .status-offline {
-            background: #ff6b6b;
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
         }
         
         @media (max-width: 768px) {
@@ -511,18 +505,18 @@
             const statusIndicator = document.getElementById('bridgeStatus');
             const statusText = document.getElementById('bridgeStatusText');
             
-            if (typeof AccountInfo !== 'undefined') {
+            if (typeof window.AccountInfo !== 'undefined') {
                 bridgeAvailable = true;
                 statusIndicator.className = 'status-indicator status-online';
                 statusText.textContent = 'Bridge 已连接';
-                showResult('deviceResult', '✅ AccountInfo Bridge 可用 - 准备开始测试！', 'success');
-                console.log('AccountInfo Bridge 可用');
+                showResult('deviceResult', '✅ window.AccountInfo Bridge 可用 - 准备开始测试！', 'success');
+                console.log('window.AccountInfo Bridge 可用');
             } else {
                 bridgeAvailable = false;
                 statusIndicator.className = 'status-indicator status-offline';
                 statusText.textContent = 'Bridge 未连接';
-                showResult('deviceResult', '❌ AccountInfo Bridge 不可用\n请在 Vivo Video App 中加载此页面', 'error');
-                console.warn('AccountInfo Bridge 不可用');
+                showResult('deviceResult', '❌ window.AccountInfo Bridge 不可用\n请在 Vivo Video App 中加载此页面', 'error');
+                console.warn('window.AccountInfo Bridge 不可用');
             }
         }
 
@@ -559,7 +553,7 @@
             element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // 安全调用Bridge函数
+        // 安全调用Bridge函数 - 修正为使用 window.AccountInfo
         function safeBridgeCall(funcName, args = [], elementId) {
             if (!bridgeAvailable) {
                 showResult(elementId, '❌ Bridge 不可用，无法调用 ' + funcName, 'error');
@@ -567,17 +561,17 @@
             }
 
             try {
-                const func = AccountInfo[funcName];
+                const func = window.AccountInfo[funcName];
                 if (typeof func !== 'function') {
-                    showResult(elementId, `❌ 函数 ${funcName} 不存在`, 'error');
+                    showResult(elementId, `❌ 函数 window.AccountInfo.${funcName} 不存在`, 'error');
                     return null;
                 }
 
-                const result = func.apply(AccountInfo, args);
+                const result = func.apply(window.AccountInfo, args);
                 testResults[funcName] = { success: true, result: result, timestamp: new Date() };
                 return result;
             } catch (error) {
-                const errorMsg = `❌ 调用 ${funcName} 失败: ${error.message}`;
+                const errorMsg = `❌ 调用 window.AccountInfo.${funcName} 失败: ${error.message}`;
                 showResult(elementId, errorMsg, 'error');
                 testResults[funcName] = { success: false, error: error.message, timestamp: new Date() };
                 console.error(errorMsg, error);
@@ -962,6 +956,24 @@
             showResult('comprehensiveResult', '🧹 所有结果已清除', 'info');
         }
 
+        // 添加调试信息
+        function debugBridge() {
+            console.log('=== Bridge 调试信息 ===');
+            console.log('window.AccountInfo 存在:', typeof window.AccountInfo !== 'undefined');
+            if (typeof window.AccountInfo !== 'undefined') {
+                console.log('window.AccountInfo 方法列表:', Object.getOwnPropertyNames(window.AccountInfo));
+            }
+            console.log('bridgeAvailable:', bridgeAvailable);
+            console.log('testResults:', testResults);
+        }
+
+        // 页面可见性变化检测
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                checkBridgeAvailability();
+            }
+        });
+
         // 添加键盘快捷键
         document.addEventListener('keydown', function(event) {
             if (event.ctrlKey) {
@@ -974,19 +986,20 @@
                         event.preventDefault();
                         clearAllResults();
                         break;
+                    case 'd':
+                        event.preventDefault();
+                        debugBridge();
+                        break;
                 }
             }
         });
 
-        // 页面可见性变化检测
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                checkBridgeAvailability();
-            }
-        });
+        // 定期检查Bridge状态
+        setInterval(checkBridgeAvailability, 5000);
 
         console.log('🎉 Vivo Video JS Bridge 测试页面加载完成！');
-        console.log('💡 提示: 使用 Ctrl+Enter 快速运行基础测试，Ctrl+Delete 清除结果');
+        console.log('💡 提示: 使用 Ctrl+Enter 快速运行基础测试，Ctrl+Delete 清除结果，Ctrl+D 查看调试信息');
+        console.log('🔍 Bridge 调用方式: window.AccountInfo.methodName()');
     </script>
 </body>
 </html>
