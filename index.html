@@ -3,1003 +3,627 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vivo Video CommonVivoScript 测试页面</title>
+    <title>JSBridge 测试页面</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            overflow: hidden;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        .header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 30px;
+        h1 {
+            color: #333;
             text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-        
-        .status-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        
-        .status-online {
-            background: #51cf66;
-        }
-        
-        .status-offline {
-            background: #ff6b6b;
-        }
-        
-        .content {
-            padding: 30px;
+            margin-bottom: 30px;
         }
         
         .section {
-            margin-bottom: 40px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
         }
         
-        .section:hover {
-            border-color: #667eea;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        .section h3 {
+            color: #555;
+            margin-top: 0;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
         }
         
-        .section-header {
-            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
-            padding: 20px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
-        .section-header h2 {
-            color: #333;
-            font-size: 1.5em;
-            margin-bottom: 5px;
-        }
-        
-        .section-header p {
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        .section-content {
-            padding: 25px;
-        }
-        
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+        button {
+            background-color: #007bff;
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            min-width: 120px;
         }
         
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        button:hover {
+            background-color: #0056b3;
         }
         
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
-        }
-        
-        .btn-success {
-            background: linear-gradient(45deg, #51cf66, #40c057);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(45deg, #ffd43b, #fab005);
-        }
-        
-        .input-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .form-input {
-            padding: 10px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            flex: 1;
-            min-width: 200px;
-            transition: border-color 0.3s ease;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
+        input[type="text"] {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
         }
         
         .result {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.6;
+            background-color: #e9ecef;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            font-family: monospace;
             white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 300px;
+            max-height: 150px;
             overflow-y: auto;
-            display: none;
         }
         
-        .result.show {
-            display: block;
+        .input-group {
+            margin: 10px 0;
         }
         
-        .result.success {
-            background: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
-        }
-        
-        .result.error {
-            background: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-        }
-        
-        .result.info {
-            background: #cce5ff;
-            border-color: #99d6ff;
-            color: #004085;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                border-radius: 10px;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .header {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .button-group {
-                justify-content: center;
-            }
-            
-            .btn {
-                flex: 1;
-                min-width: auto;
-            }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🚀 Vivo Video JS Bridge 测试工具</h1>
-            <p>CommonVivoScript Bridge 完整功能测试</p>
-            <div style="margin-top: 15px;">
-                <span id="bridgeStatus" class="status-indicator status-offline"></span>
-                <span id="bridgeStatusText">检测中...</span>
-            </div>
-        </div>
+        <h1>JSBridge 测试页面</h1>
         
-        <div class="content">
-            <!-- 设备信息获取 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>📱 设备信息获取</h2>
-                    <p>获取设备型号、版本、ID等基础信息</p>
-                </div>
-                <div class="section-content">
-                    <div class="button-group">
-                        <button class="btn" onclick="getBasicDeviceInfo()">基础设备信息</button>
-                        <button class="btn" onclick="getDeviceIds()">设备标识符</button>
-                        <button class="btn" onclick="getSystemInfo()">系统信息</button>
-                        <button class="btn" onclick="getNetworkInfo()">网络信息</button>
-                        <button class="btn" onclick="getAllDeviceInfo()">获取全部信息</button>
-                    </div>
-                    <div id="deviceResult" class="result"></div>
-                </div>
-            </div>
+        <!-- 设备信息获取 -->
+        <div class="section">
+            <h3>📱 设备信息获取</h3>
+            <button onclick="getDeviceInfo()">获取设备信息</button>
+            <button onclick="getAppInfo()">获取应用信息</button>
+            <button onclick="getNetworkInfo()">获取网络信息</button>
+            <div id="deviceInfo" class="result"></div>
+        </div>
 
-            <!-- 用户信息与认证 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>👤 用户信息与认证</h2>
-                    <p>登录状态检查、用户令牌获取等</p>
-                </div>
-                <div class="section-content">
-                    <div class="button-group">
-                        <button class="btn" onclick="checkLoginStatus()">检查登录状态</button>
-                        <button class="btn" onclick="getUserToken()">获取用户Token</button>
-                        <button class="btn" onclick="getSignParams()">获取签名参数</button>
-                        <button class="btn btn-warning" onclick="gotoLogin()">跳转登录</button>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="loginParam" placeholder="登录参数" value="h5_test_login">
-                    </div>
-                    <div id="userResult" class="result"></div>
-                </div>
-            </div>
+        <!-- 用户相关 -->
+        <div class="section">
+            <h3>👤 用户相关</h3>
+            <button onclick="checkLogin()">检查登录状态</button>
+            <button onclick="gotoLogin()">跳转登录</button>
+            <div id="userInfo" class="result"></div>
+        </div>
 
-            <!-- 页面导航与跳转 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>🔗 页面导航与跳转</h2>
-                    <p>H5页面跳转、应用内页面跳转、WebView控制</p>
-                </div>
-                <div class="section-content">
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="h5Url" placeholder="H5页面URL" value="https://www.vivo.com">
-                        <button class="btn" onclick="jumpToH5()">跳转H5</button>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="appUrl" placeholder="App URL" value="vivovideo://home">
-                        <button class="btn" onclick="jumpToApp()">跳转App</button>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="vmixUrl" placeholder="Vmix页面URL" value="https://example.com">
-                        <button class="btn" onclick="gotoVmixPage()">跳转Vmix</button>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="newWebUrl" placeholder="新WebView URL" value="https://www.example.com">
-                        <button class="btn" onclick="openNewWebActivity()">打开新WebView</button>
-                    </div>
-                    <div class="button-group">
-                        <button class="btn btn-danger" onclick="closeWebView()">关闭WebView</button>
-                        <button class="btn" onclick="handleBack()">返回操作</button>
-                        <button class="btn" onclick="immersiveBack()">沉浸式返回</button>
-                        <button class="btn" onclick="handlePageSuccess()">页面加载成功</button>
-                    </div>
-                    <div id="navigationResult" class="result"></div>
-                </div>
+        <!-- 页面导航 -->
+        <div class="section">
+            <h3>🔗 页面导航</h3>
+            <div class="input-group">
+                <label>H5 URL:</label>
+                <input type="text" id="h5Url" placeholder="输入H5页面URL" value="https://example.com">
+                <button onclick="jumpToH5()">跳转H5页面</button>
             </div>
+            <div class="input-group">
+                <label>APP包名:</label>
+                <input type="text" id="appPackage" placeholder="输入APP包名" value="com.example.app">
+                <button onclick="jumpToApp()">跳转APP</button>
+                <button onclick="checkAppInstalled()">检查APP是否安装</button>
+            </div>
+            <div class="input-group">
+                <label>视频URL:</label>
+                <input type="text" id="videoUrl" placeholder="输入视频URL" value="http://example.com/video.mp4">
+                <button onclick="playVideo()">播放视频</button>
+            </div>
+            <div id="navigationResult" class="result"></div>
+        </div>
 
-            <!-- 支付功能 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>💳 支付功能</h2>
-                    <p>普通支付、单次支付、自动续费等支付相关功能</p>
-                </div>
-                <div class="section-content">
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="payData" placeholder="支付数据JSON" value='{"productId":"test123","amount":"10.00","productName":"测试商品"}'>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="payCallback" placeholder="支付回调函数名" value="onPaymentCallback">
-                    </div>
-                    <div class="button-group">
-                        <button class="btn btn-success" onclick="testPay()">普通支付</button>
-                        <button class="btn btn-success" onclick="testPaySingular()">单次支付</button>
-                        <button class="btn btn-success" onclick="testPayAutoRenew()">自动续费支付</button>
-                        <button class="btn" onclick="createPreConnect()">创建预连接</button>
-                    </div>
-                    <div id="payResult" class="result"></div>
-                </div>
+        <!-- 积分相关 -->
+        <div class="section">
+            <h3>🎯 积分相关</h3>
+            <button onclick="getPointInfo()">获取积分信息</button>
+            <button onclick="signInPoint()">签到积分</button>
+            <div class="input-group">
+                <label>积分变化:</label>
+                <input type="number" id="balanceChange" placeholder="输入积分变化值" value="100">
+                <button onclick="changeBalance()">触发积分变化</button>
             </div>
+            <div id="pointResult" class="result"></div>
+        </div>
 
-            <!-- 积分功能 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>🎯 积分功能</h2>
-                    <p>积分查询、签到、余额变化等积分相关操作</p>
-                </div>
-                <div class="section-content">
-                    <div class="button-group">
-                        <button class="btn" onclick="getPointInfo()">获取积分信息</button>
-                        <button class="btn btn-success" onclick="signInPoint()">签到积分</button>
-                        <button class="btn" onclick="getPointPlayTime()">获取播放时长</button>
-                    </div>
-                    <div class="input-group">
-                        <input type="number" class="form-input" id="balanceChange" placeholder="积分变化数量" value="100">
-                        <button class="btn" onclick="changeBalance()">积分变化</button>
-                    </div>
-                    <div id="pointResult" class="result"></div>
-                </div>
+        <!-- 支付相关 -->
+        <div class="section">
+            <h3>💰 支付相关</h3>
+            <div class="input-group">
+                <label>商品ID:</label>
+                <input type="text" id="productId" placeholder="输入商品ID" value="product_001">
             </div>
+            <div class="input-group">
+                <label>订单信息:</label>
+                <input type="text" id="orderInfo" placeholder="输入订单信息" value='{"orderId":"12345","amount":"99.00"}'>
+            </div>
+            <button onclick="onPay()">普通支付</button>
+            <button onclick="onPaySingular()">单次支付</button>
+            <button onclick="onPayAutoRenew()">自动续费支付</button>
+            <div id="payResult" class="result"></div>
+        </div>
 
-            <!-- 应用检测与管理 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>📦 应用检测与管理</h2>
-                    <p>检查应用安装状态、获取应用版本、使用时长等</p>
-                </div>
-                <div class="section-content">
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="packageName" placeholder="应用包名" value="com.android.browser">
-                        <button class="btn" onclick="checkAppInstalled()">检查安装</button>
-                        <button class="btn" onclick="getAppVersionCode()">获取版本</button>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="useTimePackage" placeholder="包名" value="com.vivo.videoplayer">
-                        <input type="text" class="form-input" id="useTimeDate" placeholder="日期(YYYY-MM-DD)" value="2024-01-01">
-                        <button class="btn" onclick="checkAppUseTime()">检查使用时长</button>
-                    </div>
-                    <div class="button-group">
-                        <button class="btn" onclick="getAppName()">获取应用名称</button>
-                        <button class="btn" onclick="getFeatureList()">获取功能列表</button>
-                        <button class="btn" onclick="getPrivacyVersion()">获取隐私版本</button>
-                    </div>
-                    <div id="appResult" class="result"></div>
-                </div>
-            </div>
+        <!-- 系统功能 -->
+        <div class="section">
+            <h3>⚙️ 系统功能</h3>
+            <button onclick="showToast()">显示Toast</button>
+            <button onclick="onBackPressed()">触发返回</button>
+            <button onclick="closeWebView()">关闭WebView</button>
+            <button onclick="getCurrentUiMode()">获取UI模式</button>
+            <button onclick="turnToFaq()">跳转FAQ</button>
+            <div id="systemResult" class="result"></div>
+        </div>
 
-            <!-- 系统功能 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>⚙️ 系统功能</h2>
-                    <p>Toast显示、模式检查、UI模式等系统相关功能</p>
-                </div>
-                <div class="section-content">
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="toastMessage" placeholder="Toast消息" value="Hello from H5! 🎉">
-                        <button class="btn" onclick="showToast()">显示Toast</button>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="modeCheck" placeholder="模式名称" value="dark_mode">
-                        <button class="btn" onclick="checkMode()">检查模式</button>
-                    </div>
-                    <div class="button-group">
-                        <button class="btn" onclick="getUiMode()">获取UI模式</button>
-                        <button class="btn" onclick="isPreloadMode()">是否预加载模式</button>
-                        <button class="btn" onclick="isHindCloseView()">是否隐藏关闭按钮</button>
-                        <button class="btn btn-warning" onclick="turnToFaq()">跳转FAQ</button>
-                    </div>
-                    <div id="systemResult" class="result"></div>
-                </div>
+        <!-- 事件追踪 -->
+        <div class="section">
+            <h3>📊 事件追踪</h3>
+            <div class="input-group">
+                <label>事件ID:</label>
+                <input type="text" id="eventId" placeholder="输入事件ID" value="page_view">
             </div>
+            <div class="input-group">
+                <label>事件信息:</label>
+                <input type="text" id="eventInfo" placeholder="输入事件信息JSON" value='{"page":"test","action":"click"}'>
+            </div>
+            <button onclick="traceEvent()">追踪事件</button>
+            <div id="eventResult" class="result"></div>
+        </div>
 
-            <!-- 网络与媒体 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>🌐 网络与媒体</h2>
-                    <p>HTTP请求、视频播放等网络和媒体相关功能</p>
-                </div>
-                <div class="section-content">
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="httpUrl" placeholder="HTTP请求URL" value="https://httpbin.org/get">
-                        <button class="btn" onclick="requestHttp()">发起HTTP请求</button>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="videoUrl" placeholder="视频URL" value="https://example.com/video.mp4">
-                        <button class="btn btn-success" onclick="playVideo()">播放视频</button>
-                    </div>
-                    <div id="networkResult" class="result"></div>
-                </div>
+        <!-- 其他功能 -->
+        <div class="section">
+            <h3>🔧 其他功能</h3>
+            <div class="input-group">
+                <label>URL签名:</label>
+                <input type="text" id="signUrl" placeholder="输入需要签名的URL" value="https://api.example.com/data">
+                <button onclick="getSignParams()">获取签名参数</button>
             </div>
+            <div class="input-group">
+                <label>HTTP请求:</label>
+                <input type="text" id="httpUrl" placeholder="输入HTTP URL" value="https://api.example.com/test">
+                <button onclick="requestHttp()">发起HTTP请求</button>
+            </div>
+            <button onclick="handlePageSuccess()">页面加载成功</button>
+            <button onclick="createPreConnect()">创建预连接</button>
+            <div id="otherResult" class="result"></div>
+        </div>
 
-            <!-- 事件追踪与上报 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>📊 事件追踪与上报</h2>
-                    <p>事件追踪、数据上报等分析相关功能</p>
-                </div>
-                <div class="section-content">
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="eventId" placeholder="事件ID" value="test_h5_interaction">
-                        <input type="text" class="form-input" id="eventData" placeholder="事件数据JSON" value='{"action":"button_click","page":"test_page","timestamp":"2024-01-01T10:00:00Z"}'>
-                    </div>
-                    <div class="button-group">
-                        <button class="btn" onclick="traceEvent()">发送事件追踪</button>
-                        <button class="btn" onclick="notifyReportFinish()">通知上报完成</button>
-                        <button class="btn" onclick="onReceiveAction()">接收动作</button>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="reportData" placeholder="上报数据" value="report_test_data">
-                        <input type="text" class="form-input" id="actionData" placeholder="动作数据" value="action_test_data">
-                    </div>
-                    <div id="trackingResult" class="result"></div>
-                </div>
-            </div>
-
-            <!-- 返回按键监听 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>⬅️ 返回按键监听</h2>
-                    <p>注册和取消返回按键监听，自定义返回行为</p>
-                </div>
-                <div class="section-content">
-                    <div class="input-group">
-                        <input type="text" class="form-input" id="backCallback" placeholder="回调函数名" value="customBackHandler">
-                    </div>
-                    <div class="button-group">
-                        <button class="btn btn-success" onclick="registerBackListener()">注册返回监听</button>
-                        <button class="btn btn-danger" onclick="unregisterBackListener()">取消返回监听</button>
-                        <button class="btn" onclick="testBackPress()">测试返回按键</button>
-                        <button class="btn" onclick="webBackPress()">Web返回处理</button>
-                    </div>
-                    <div id="backResult" class="result"></div>
-                </div>
-            </div>
-
-            <!-- 综合测试 -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>🧪 综合测试</h2>
-                    <p>批量测试、压力测试等综合功能测试</p>
-                </div>
-                <div class="section-content">
-                    <div class="button-group">
-                        <button class="btn btn-warning" onclick="runAllTests()">运行所有测试</button>
-                        <button class="btn" onclick="runBasicTests()">基础功能测试</button>
-                        <button class="btn" onclick="runAdvancedTests()">高级功能测试</button>
-                        <button class="btn btn-danger" onclick="clearAllResults()">清除所有结果</button>
-                    </div>
-                    <div id="comprehensiveResult" class="result"></div>
-                </div>
-            </div>
+        <!-- 返回键注册测试 -->
+        <div class="section">
+            <h3>⬅️ 返回键处理</h3>
+            <button onclick="registerBackPress()">注册返回键监听</button>
+            <button onclick="unregisterBackPress()">取消返回键监听</button>
+            <button onclick="testBackPress()">测试返回键</button>
+            <div id="backResult" class="result"></div>
         </div>
     </div>
 
     <script>
-        // 全局变量
-        let bridgeAvailable = false;
-        let testResults = {};
-
-        // 页面加载完成后的初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('页面加载完成，开始检测Bridge...');
-            checkBridgeAvailability();
-            initializeTestEnvironment();
-        });
-
-        // 检查Bridge可用性
-        function checkBridgeAvailability() {
-            const statusIndicator = document.getElementById('bridgeStatus');
-            const statusText = document.getElementById('bridgeStatusText');
-            
-            if (typeof window.AccountInfo !== 'undefined') {
-                bridgeAvailable = true;
-                statusIndicator.className = 'status-indicator status-online';
-                statusText.textContent = 'Bridge 已连接';
-                showResult('deviceResult', '✅ window.AccountInfo Bridge 可用 - 准备开始测试！', 'success');
-                console.log('window.AccountInfo Bridge 可用');
-            } else {
-                bridgeAvailable = false;
-                statusIndicator.className = 'status-indicator status-offline';
-                statusText.textContent = 'Bridge 未连接';
-                showResult('deviceResult', '❌ window.AccountInfo Bridge 不可用\n请在 Vivo Video App 中加载此页面', 'error');
-                console.warn('window.AccountInfo Bridge 不可用');
+        // 检查H5Interface是否可用
+        function checkInterface() {
+            if (typeof H5Interface === 'undefined') {
+                alert('H5Interface 不可用，请在支持的WebView环境中打开');
+                return false;
             }
+            return true;
         }
 
-        // 初始化测试环境
-        function initializeTestEnvironment() {
-            // 设置默认回调函数
-            window.onPaymentCallback = function(result) {
-                showResult('payResult', '💰 支付回调接收: ' + JSON.stringify(result, null, 2), 'info');
-            };
-
-            window.customBackHandler = function() {
-                showResult('backResult', '⬅️ 自定义返回处理被调用！\n时间: ' + new Date().toLocaleString(), 'info');
-            };
-
-            // 设置当前时间作为默认值
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('useTimeDate').value = today;
-
-            console.log('测试环境初始化完成');
-        }
-
-        // 通用结果显示函数
-        function showResult(elementId, content, type = 'info') {
-            const element = document.getElementById(elementId);
-            if (!element) {
-                console.error('Element not found:', elementId);
-                return;
-            }
+        // 设备信息获取
+        function getDeviceInfo() {
+            if (!checkInterface()) return;
             
-            element.className = `result show ${type}`;
-            element.textContent = content;
-            
-            // 自动滚动到结果区域
-            element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        // 安全调用Bridge函数 - 修正为使用 window.AccountInfo
-        function safeBridgeCall(funcName, args = [], elementId) {
-            if (!bridgeAvailable) {
-                showResult(elementId, '❌ Bridge 不可用，无法调用 ' + funcName, 'error');
-                return null;
-            }
-
             try {
-                const func = window.AccountInfo[funcName];
-                if (typeof func !== 'function') {
-                    showResult(elementId, `❌ 函数 window.AccountInfo.${funcName} 不存在`, 'error');
-                    return null;
-                }
-
-                const result = func.apply(window.AccountInfo, args);
-                testResults[funcName] = { success: true, result: result, timestamp: new Date() };
-                return result;
-            } catch (error) {
-                const errorMsg = `❌ 调用 window.AccountInfo.${funcName} 失败: ${error.message}`;
-                showResult(elementId, errorMsg, 'error');
-                testResults[funcName] = { success: false, error: error.message, timestamp: new Date() };
-                console.error(errorMsg, error);
-                return null;
+                const deviceInfo = {
+                    model: H5Interface.getModel(),
+                    aaid: H5Interface.getAaid(),
+                    oaid: H5Interface.getOaid(),
+                    vaid: H5Interface.getVaid(),
+                    u: H5Interface.getU(),
+                    ua: H5Interface.getUa(),
+                    vApp: H5Interface.getVApp(),
+                    vOs: H5Interface.getVOs(),
+                    av: H5Interface.getAv(),
+                    cpuInfo: H5Interface.getCpuInfo(),
+                    localIp: H5Interface.getLocalIpAddress(),
+                    token: H5Interface.getToken()
+                };
+                
+                document.getElementById('deviceInfo').textContent = JSON.stringify(deviceInfo, null, 2);
+            } catch (e) {
+                document.getElementById('deviceInfo').textContent = '获取设备信息失败: ' + e.message;
             }
         }
 
-        // === 设备信息获取 ===
-        function getBasicDeviceInfo() {
-            const info = {
-                设备型号: safeBridgeCall('getModel', [], 'deviceResult'),
-                应用名称: safeBridgeCall('getAppName', [], 'deviceResult'),
-                渠道: safeBridgeCall('getChannel', [], 'deviceResult'),
-                Android版本: safeBridgeCall('getAv', [], 'deviceResult'),
-                VOS版本: safeBridgeCall('getVOs', [], 'deviceResult'),
-                VApp版本: safeBridgeCall('getVApp', [], 'deviceResult')
-            };
-            showResult('deviceResult', '📱 基础设备信息:\n' + JSON.stringify(info, null, 2), 'success');
-        }
-
-        function getDeviceIds() {
-            const ids = {
-                OAID: safeBridgeCall('getOaid', [], 'deviceResult'),
-                AAID: safeBridgeCall('getAaid', [], 'deviceResult'),
-                VAID: safeBridgeCall('getVaid', [], 'deviceResult'),
-                UUID: safeBridgeCall('getU', [], 'deviceResult')
-            };
-            showResult('deviceResult', '🆔 设备标识符:\n' + JSON.stringify(ids, null, 2), 'success');
-        }
-
-        function getSystemInfo() {
-            const systemInfo = {
-                CPU信息: safeBridgeCall('getCpuInfo', [], 'deviceResult'),
-                本地IP: safeBridgeCall('getLocalIpAddress', [], 'deviceResult'),
-                UserAgent: safeBridgeCall('getUa', [], 'deviceResult'),
-                功能列表: safeBridgeCall('getFeatureList', [], 'deviceResult'),
-                隐私版本: safeBridgeCall('getPrivacyVersion', [], 'deviceResult')
-            };
-            showResult('deviceResult', '💻 系统信息:\n' + JSON.stringify(systemInfo, null, 2), 'success');
+        function getAppInfo() {
+            if (!checkInterface()) return;
+            
+            try {
+                const appInfo = {
+                    appName: H5Interface.getAppName(),
+                    channel: H5Interface.getChannel(),
+                    featureList: H5Interface.getFeatureList(),
+                    privacyVersion: H5Interface.getPrivacyVersion(),
+                    appVersion: H5Interface.getAppVersion('com.vivo.video')
+                };
+                
+                document.getElementById('deviceInfo').textContent = JSON.stringify(appInfo, null, 2);
+            } catch (e) {
+                document.getElementById('deviceInfo').textContent = '获取应用信息失败: ' + e.message;
+            }
         }
 
         function getNetworkInfo() {
-            const networkInfo = {
-                网络类型: safeBridgeCall('getNetType', [], 'deviceResult')
-            };
-            showResult('deviceResult', '🌐 网络信息:\n' + JSON.stringify(networkInfo, null, 2), 'success');
+            if (!checkInterface()) return;
+            
+            try {
+                const networkInfo = {
+                    netType: H5Interface.getNetType()
+                };
+                
+                document.getElementById('deviceInfo').textContent = JSON.stringify(networkInfo, null, 2);
+            } catch (e) {
+                document.getElementById('deviceInfo').textContent = '获取网络信息失败: ' + e.message;
+            }
         }
 
-        function getAllDeviceInfo() {
-            const allInfo = {
-                基础信息: {
-                    设备型号: safeBridgeCall('getModel', [], 'deviceResult'),
-                    应用名称: safeBridgeCall('getAppName', [], 'deviceResult'),
-                    渠道: safeBridgeCall('getChannel', [], 'deviceResult'),
-                    Android版本: safeBridgeCall('getAv', [], 'deviceResult'),
-                    VOS版本: safeBridgeCall('getVOs', [], 'deviceResult'),
-                    VApp版本: safeBridgeCall('getVApp', [], 'deviceResult')
-                },
-                设备标识: {
-                    OAID: safeBridgeCall('getOaid', [], 'deviceResult'),
-                    AAID: safeBridgeCall('getAaid', [], 'deviceResult'),
-                    VAID: safeBridgeCall('getVaid', [], 'deviceResult'),
-                    UUID: safeBridgeCall('getU', [], 'deviceResult')
-                },
-                系统信息: {
-                    CPU信息: safeBridgeCall('getCpuInfo', [], 'deviceResult'),
-                    本地IP: safeBridgeCall('getLocalIpAddress', [], 'deviceResult'),
-                    UserAgent: safeBridgeCall('getUa', [], 'deviceResult'),
-                    网络类型: safeBridgeCall('getNetType', [], 'deviceResult')
-                },
-                其他信息: {
-                    功能列表: safeBridgeCall('getFeatureList', [], 'deviceResult'),
-                    隐私版本: safeBridgeCall('getPrivacyVersion', [], 'deviceResult')
-                }
-            };
-            showResult('deviceResult', '📋 完整设备信息:\n' + JSON.stringify(allInfo, null, 2), 'success');
-        }
-
-        // === 用户信息与认证 ===
-        function checkLoginStatus() {
-            const isLogin = safeBridgeCall('checkLoginStatus', [], 'userResult');
-            showResult('userResult', `👤 登录状态: ${isLogin ? '✅ 已登录' : '❌ 未登录'}`, isLogin ? 'success' : 'error');
-        }
-
-        function getUserToken() {
-            const token = safeBridgeCall('getToken', [], 'userResult');
-            showResult('userResult', `🔑 用户Token: ${token || '空'}`, token ? 'success' : 'error');
-        }
-
-        function getSignParams() {
-            const currentUrl = window.location.href;
-            const signParams = safeBridgeCall('h5GetSignParams', [currentUrl], 'userResult');
-            showResult('userResult', `🔐 签名参数:\nURL: ${currentUrl}\n签名: ${signParams || '空'}`, 'info');
+        // 用户相关
+        function checkLogin() {
+            if (!checkInterface()) return;
+            
+            try {
+                const isLoggedIn = H5Interface.checkLoginStatus();
+                document.getElementById('userInfo').textContent = '登录状态: ' + (isLoggedIn ? '已登录' : '未登录');
+            } catch (e) {
+                document.getElementById('userInfo').textContent = '检查登录状态失败: ' + e.message;
+            }
         }
 
         function gotoLogin() {
-            const param = document.getElementById('loginParam').value;
-            safeBridgeCall('gotoLogin', [param], 'userResult');
-            showResult('userResult', `🔄 正在跳转登录页面...\n参数: ${param}`, 'info');
+            if (!checkInterface()) return;
+            
+            try {
+                H5Interface.gotoLogin('test_callback');
+                document.getElementById('userInfo').textContent = '已调用登录接口';
+            } catch (e) {
+                document.getElementById('userInfo').textContent = '调用登录失败: ' + e.message;
+            }
         }
 
-        // === 页面导航与跳转 ===
+        // 页面导航
         function jumpToH5() {
+            if (!checkInterface()) return;
+            
             const url = document.getElementById('h5Url').value;
-            safeBridgeCall('jumpH5', [url], 'navigationResult');
-            showResult('navigationResult', `🔗 正在跳转H5页面: ${url}`, 'info');
+            try {
+                H5Interface.jumpH5(url);
+                document.getElementById('navigationResult').textContent = '已跳转到: ' + url;
+            } catch (e) {
+                document.getElementById('navigationResult').textContent = '跳转失败: ' + e.message;
+            }
         }
 
         function jumpToApp() {
-            const url = document.getElementById('appUrl').value;
-            safeBridgeCall('jumpToApp', [url], 'navigationResult');
-            showResult('navigationResult', `📱 正在跳转App页面: ${url}`, 'info');
+            if (!checkInterface()) return;
+            
+            const packageName = document.getElementById('appPackage').value;
+            try {
+                H5Interface.jumpToApp(packageName);
+                document.getElementById('navigationResult').textContent = '已尝试打开APP: ' + packageName;
+            } catch (e) {
+                document.getElementById('navigationResult').textContent = '打开APP失败: ' + e.message;
+            }
         }
 
-        function gotoVmixPage() {
-            const url = document.getElementById('vmixUrl').value;
-            safeBridgeCall('gotoVmixPage', [url], 'navigationResult');
-            showResult('navigationResult', `🎬 正在跳转Vmix页面: ${url}`, 'info');
-        }
-
-        function openNewWebActivity() {
-            const url = document.getElementById('newWebUrl').value;
-            safeBridgeCall('onOpenNewWebActivity', [url], 'navigationResult');
-            showResult('navigationResult', `🆕 正在打开新WebView: ${url}`, 'info');
-        }
-
-        function closeWebView() {
-            safeBridgeCall('onCloseWebViewFragment', [], 'navigationResult');
-            showResult('navigationResult', '❌ 正在关闭WebView...', 'warning');
-        }
-
-        function handleBack() {
-            safeBridgeCall('onBackPressed', [], 'navigationResult');
-            showResult('navigationResult', '⬅️ 触发返回操作', 'info');
-        }
-
-        function immersiveBack() {
-            safeBridgeCall('immersiveBack', [], 'navigationResult');
-            showResult('navigationResult', '🎭 触发沉浸式返回', 'info');
-        }
-
-        function handlePageSuccess() {
-            safeBridgeCall('handlePageSuccess', [], 'navigationResult');
-            showResult('navigationResult', '✅ 通知页面加载成功', 'success');
-        }
-
-        // === 支付功能 ===
-        function testPay() {
-            const payData = document.getElementById('payData').value;
-            const callback = document.getElementById('payCallback').value;
-            safeBridgeCall('onPay', [payData, callback], 'payResult');
-            showResult('payResult', `💳 发起普通支付:\n数据: ${payData}\n回调: ${callback}`, 'info');
-        }
-
-        function testPaySingular() {
-            const payData = document.getElementById('payData').value;
-            const callback = document.getElementById('payCallback').value;
-            safeBridgeCall('onPaySingular', [payData, callback], 'payResult');
-            showResult('payResult', `💰 发起单次支付:\n数据: ${payData}\n回调: ${callback}`, 'info');
-        }
-
-        function testPayAutoRenew() {
-            const payData = document.getElementById('payData').value;
-            const callback = document.getElementById('payCallback').value;
-            safeBridgeCall('onPayAutoRenew', [payData, callback], 'payResult');
-            showResult('payResult', `🔄 发起自动续费支付:\n数据: ${payData}\n回调: ${callback}`, 'info');
-        }
-
-        function createPreConnect() {
-            const connectId = Math.floor(Math.random() * 1000);
-            safeBridgeCall('createPreConnect', [connectId], 'payResult');
-            showResult('payResult', `🔗 创建预连接，ID: ${connectId}`, 'info');
-        }
-
-        // === 积分功能 ===
-        function getPointInfo() {
-            const activityKey = safeBridgeCall('getPointActivityKey', [], 'pointResult');
-            const playTime = safeBridgeCall('getPointPlayTime', [], 'pointResult');
-            showResult('pointResult', `🎯 积分信息:\n活动Key: ${activityKey}\n播放时长: ${playTime}秒`, 'success');
-        }
-
-        function signInPoint() {
-            safeBridgeCall('signInPoint', [true], 'pointResult');
-            showResult('pointResult', '✅ 签到积分操作已发送', 'success');
-        }
-
-        function getPointPlayTime() {
-            const playTime = safeBridgeCall('getPointPlayTime', [], 'pointResult');
-            showResult('pointResult', `⏱️ 播放时长: ${playTime}秒 (${Math.floor(playTime/60)}分钟)`, 'info');
-        }
-
-        function changeBalance() {
-            const balance = parseInt(document.getElementById('balanceChange').value);
-            safeBridgeCall('onBalanceChange', [balance], 'pointResult');
-            showResult('pointResult', `💎 积分变化: ${balance > 0 ? '+' : ''}${balance}`, balance > 0 ? 'success' : 'warning');
-        }
-
-        // === 应用检测与管理 ===
         function checkAppInstalled() {
-            const packageName = document.getElementById('packageName').value;
-            const isInstalled = safeBridgeCall('isInstalledApp', [packageName], 'appResult');
-            showResult('appResult', `📦 应用 ${packageName} ${isInstalled ? '✅ 已安装' : '❌ 未安装'}`, isInstalled ? 'success' : 'error');
-        }
-
-        function getAppVersionCode() {
-            const packageName = document.getElementById('packageName').value;
-            const version = safeBridgeCall('getAppVersion', [packageName], 'appResult');
-            showResult('appResult', `📋 应用 ${packageName} 版本号: ${version}`, 'info');
-        }
-
-        function checkAppUseTime() {
-            const packageName = document.getElementById('useTimePackage').value;
-            const date = document.getElementById('useTimeDate').value;
-            const useTime = safeBridgeCall('checkAppUseTime', [packageName, date], 'appResult');
-            showResult('appResult', `⏰ 应用 ${packageName} 在 ${date} 的使用时长: ${useTime}`, 'info');
-        }
-
-        function getAppName() {
-            const appName = safeBridgeCall('getAppName', [], 'appResult');
-            showResult('appResult', `📱 当前应用名称: ${appName}`, 'success');
-        }
-
-        function getFeatureList() {
-            const features = safeBridgeCall('getFeatureList', [], 'appResult');
-            showResult('appResult', `🔧 功能列表: ${features}`, 'info');
-        }
-
-        function getPrivacyVersion() {
-            const version = safeBridgeCall('getPrivacyVersion', [], 'appResult');
-            showResult('appResult', `🔒 隐私政策版本: ${version}`, 'info');
-        }
-
-        // === 系统功能 ===
-        function showToast() {
-            const message = document.getElementById('toastMessage').value;
-            safeBridgeCall('showToast', [message], 'systemResult');
-            showResult('systemResult', `🎉 Toast已显示: ${message}`, 'success');
-        }
-
-        function checkMode() {
-            const mode = document.getElementById('modeCheck').value;
-            const isMode = safeBridgeCall('isMode', [mode], 'systemResult');
-            showResult('systemResult', `⚙️ 模式 ${mode}: ${isMode ? '✅ 启用' : '❌ 禁用'}`, isMode ? 'success' : 'error');
-        }
-
-        function getUiMode() {
-            const uiMode = safeBridgeCall('getCurrentUiMode', [], 'systemResult');
-            const modeText = uiMode === 1 ? '深色模式' : uiMode === 0 ? '浅色模式' : '未知模式';
-            showResult('systemResult', `🎨 当前UI模式: ${uiMode} (${modeText})`, 'info');
-        }
-
-        function isPreloadMode() {
-            const isPreload = safeBridgeCall('isPreloadMode', [], 'systemResult');
-            showResult('systemResult', `⚡ 预加载模式: ${isPreload ? '✅ 开启' : '❌ 关闭'}`, 'info');
-        }
-
-        function isHindCloseView() {
-            const isHidden = safeBridgeCall('isHindCloseView', [], 'systemResult');
-            showResult('systemResult', `👁️ 关闭按钮隐藏: ${isHidden ? '✅ 是' : '❌ 否'}`, 'info');
-        }
-
-        function turnToFaq() {
-            safeBridgeCall('turnToFaq', [], 'systemResult');
-            showResult('systemResult', '❓ 正在跳转FAQ页面...', 'info');
-        }
-
-        // === 网络与媒体 ===
-        function requestHttp() {
-            const url = document.getElementById('httpUrl').value;
-            safeBridgeCall('requestHttp', [url], 'networkResult');
-            showResult('networkResult', `🌐 HTTP请求已发送: ${url}`, 'info');
+            if (!checkInterface()) return;
+            
+            const packageName = document.getElementById('appPackage').value;
+            try {
+                const isInstalled = H5Interface.isInstalledApp(packageName);
+                document.getElementById('navigationResult').textContent = 
+                    packageName + (isInstalled ? ' 已安装' : ' 未安装');
+            } catch (e) {
+                document.getElementById('navigationResult').textContent = '检查APP安装状态失败: ' + e.message;
+            }
         }
 
         function playVideo() {
-            const url = document.getElementById('videoUrl').value;
-            safeBridgeCall('playVideo', [url], 'networkResult');
-            showResult('networkResult', `▶️ 视频播放请求: ${url}`, 'info');
+            if (!checkInterface()) return;
+            
+            const videoUrl = document.getElementById('videoUrl').value;
+            try {
+                H5Interface.playVideo(videoUrl);
+                document.getElementById('navigationResult').textContent = '已调用播放视频: ' + videoUrl;
+            } catch (e) {
+                document.getElementById('navigationResult').textContent = '播放视频失败: ' + e.message;
+            }
         }
 
-        // === 事件追踪与上报 ===
+        // 积分相关
+        function getPointInfo() {
+            if (!checkInterface()) return;
+            
+            try {
+                const pointInfo = {
+                    pointActivityKey: H5Interface.getPointActivityKey(),
+                    pointPlayTime: H5Interface.getPointPlayTime()
+                };
+                
+                document.getElementById('pointResult').textContent = JSON.stringify(pointInfo, null, 2);
+            } catch (e) {
+                document.getElementById('pointResult').textContent = '获取积分信息失败: ' + e.message;
+            }
+        }
+
+        function signInPoint() {
+            if (!checkInterface()) return;
+            
+            try {
+                H5Interface.signInPoint(true);
+                document.getElementById('pointResult').textContent = '已调用签到积分接口';
+            } catch (e) {
+                document.getElementById('pointResult').textContent = '签到失败: ' + e.message;
+            }
+        }
+
+        function changeBalance() {
+            if (!checkInterface()) return;
+            
+            const balance = document.getElementById('balanceChange').value;
+            try {
+                H5Interface.onBalanceChange(parseInt(balance));
+                document.getElementById('pointResult').textContent = '已触发积分变化: ' + balance;
+            } catch (e) {
+                document.getElementById('pointResult').textContent = '触发积分变化失败: ' + e.message;
+            }
+        }
+
+        // 支付相关
+        function onPay() {
+            if (!checkInterface()) return;
+            
+            const productId = document.getElementById('productId').value;
+            const orderInfo = document.getElementById('orderInfo').value;
+            try {
+                H5Interface.onPay(productId, orderInfo);
+                document.getElementById('payResult').textContent = '已调用普通支付接口';
+            } catch (e) {
+                document.getElementById('payResult').textContent = '支付调用失败: ' + e.message;
+            }
+        }
+
+        function onPaySingular() {
+            if (!checkInterface()) return;
+            
+            const productId = document.getElementById('productId').value;
+            const orderInfo = document.getElementById('orderInfo').value;
+            try {
+                H5Interface.onPaySingular(productId, orderInfo);
+                document.getElementById('payResult').textContent = '已调用单次支付接口';
+            } catch (e) {
+                document.getElementById('payResult').textContent = '单次支付调用失败: ' + e.message;
+            }
+        }
+
+        function onPayAutoRenew() {
+            if (!checkInterface()) return;
+            
+            const productId = document.getElementById('productId').value;
+            const orderInfo = document.getElementById('orderInfo').value;
+            try {
+                H5Interface.onPayAutoRenew(productId, orderInfo);
+                document.getElementById('payResult').textContent = '已调用自动续费支付接口';
+            } catch (e) {
+                document.getElementById('payResult').textContent = '自动续费支付调用失败: ' + e.message;
+            }
+        }
+
+        // 系统功能
+        function showToast() {
+            if (!checkInterface()) return;
+            
+            try {
+                H5Interface.showToast('这是一个测试Toast消息');
+                document.getElementById('systemResult').textContent = '已调用Toast显示';
+            } catch (e) {
+                document.getElementById('systemResult').textContent = 'Toast显示失败: ' + e.message;
+            }
+        }
+
+        function onBackPressed() {
+            if (!checkInterface()) return;
+            
+            try {
+                H5Interface.onBackPressed();
+                document.getElementById('systemResult').textContent = '已触发返回事件';
+            } catch (e) {
+                document.getElementById('systemResult').textContent = '触发返回事件失败: ' + e.message;
+            }
+        }
+
+        function closeWebView() {
+            if (!checkInterface()) return;
+            
+            try {
+                H5Interface.onCloseWebViewFragment();
+                document.getElementById('systemResult').textContent = '已调用关闭WebView';
+            } catch (e) {
+                document.getElementById('systemResult').textContent = '关闭WebView失败: ' + e.message;
+            }
+        }
+
+        function getCurrentUiMode() {
+            if (!checkInterface()) return;
+            
+            try {
+                const uiMode = H5Interface.getCurrentUiMode();
+                document.getElementById('systemResult').textContent = '当前UI模式: ' + uiMode;
+            } catch (e) {
+                document.getElementById('systemResult').textContent = '获取UI模式失败: ' + e.message;
+            }
+        }
+
+        function turnToFaq() {
+            if (!checkInterface()) return;
+            
+            try {
+                H5Interface.turnToFaq();
+                document.getElementById('systemResult').textContent = '已跳转到FAQ页面';
+            } catch (e) {
+                document.getElementById('systemResult').textContent = '跳转FAQ失败: ' + e.message;
+            }
+        }
+
+        // 事件追踪
         function traceEvent() {
+            if (!checkInterface()) return;
+            
             const eventId = document.getElementById('eventId').value;
-            const eventData = document.getElementById('eventData').value;
-            safeBridgeCall('onTraceDelayEvent', [eventId, eventData], 'trackingResult');
-            showResult('trackingResult', `📊 事件追踪已发送:\nID: ${eventId}\n数据: ${eventData}`, 'info');
+            const eventInfo = document.getElementById('eventInfo').value;
+            try {
+                H5Interface.onTraceDelayEvent(eventId, eventInfo);
+                document.getElementById('eventResult').textContent = '已发送事件追踪: ' + eventId;
+            } catch (e) {
+                document.getElementById('eventResult').textContent = '事件追踪失败: ' + e.message;
+            }
         }
 
-        function notifyReportFinish() {
-            const data = document.getElementById('reportData').value;
-            safeBridgeCall('notifyReportProcessIsFinish', [data], 'trackingResult');
-            showResult('trackingResult', `📈 上报完成通知: ${data}`, 'success');
+        // 其他功能
+        function getSignParams() {
+            if (!checkInterface()) return;
+            
+            const url = document.getElementById('signUrl').value;
+            try {
+                const signParams = H5Interface.h5GetSignParams(url);
+                document.getElementById('otherResult').textContent = '签名参数: ' + signParams;
+            } catch (e) {
+                document.getElementById('otherResult').textContent = '获取签名参数失败: ' + e.message;
+            }
         }
 
-        function onReceiveAction() {
-            const data = document.getElementById('actionData').value;
-            safeBridgeCall('onRecieveAction', [data], 'trackingResult');
-            showResult('trackingResult', `🎬 接收动作: ${data}`, 'info');
+        function requestHttp() {
+            if (!checkInterface()) return;
+            
+            const url = document.getElementById('httpUrl').value;
+            try {
+                H5Interface.requestHttp(url);
+                document.getElementById('otherResult').textContent = '已发起HTTP请求: ' + url;
+            } catch (e) {
+                document.getElementById('otherResult').textContent = 'HTTP请求失败: ' + e.message;
+            }
         }
 
-        // === 返回按键监听 ===
-        function registerBackListener() {
-            const callback = document.getElementById('backCallback').value;
-            const config = JSON.stringify({ backPressCallback: callback });
-            safeBridgeCall('registerBack', [config, ''], 'backResult');
-            showResult('backResult', `⬅️ 返回监听已注册: ${callback}`, 'success');
+        function handlePageSuccess() {
+            if (!checkInterface()) return;
+            
+            try {
+                H5Interface.handlePageSuccess();
+                document.getElementById('otherResult').textContent = '已通知页面加载成功';
+            } catch (e) {
+                document.getElementById('otherResult').textContent = '通知页面加载成功失败: ' + e.message;
+            }
         }
 
-        function unregisterBackListener() {
-            const callback = document.getElementById('backCallback').value;
-            const config = JSON.stringify({ backPressCallback: callback });
-            safeBridgeCall('unregisterBack', [config, ''], 'backResult');
-            showResult('backResult', `❌ 返回监听已取消: ${callback}`, 'warning');
+        function createPreConnect() {
+            if (!checkInterface()) return;
+            
+            try {
+                H5Interface.createPreConnect(1);
+                document.getElementById('otherResult').textContent = '已创建预连接';
+            } catch (e) {
+                document.getElementById('otherResult').textContent = '创建预连接失败: ' + e.message;
+            }
+        }
+
+        // 返回键处理
+        let backPressCallbackRegistered = false;
+
+        function testBackPressCallback() {
+            console.log('返回键被按下');
+            document.getElementById('backResult').textContent = '返回键回调被触发: ' + new Date().toLocaleTimeString();
+        }
+
+        function registerBackPress() {
+            if (!checkInterface()) return;
+            
+            try {
+                const params = JSON.stringify({
+                    backPressCallback: 'testBackPressCallback'
+                });
+                H5Interface.registerBack(params, '');
+                backPressCallbackRegistered = true;
+                document.getElementById('backResult').textContent = '已注册返回键监听';
+            } catch (e) {
+                document.getElementById('backResult').textContent = '注册返回键监听失败: ' + e.message;
+            }
+        }
+
+        function unregisterBackPress() {
+            if (!checkInterface()) return;
+            
+            try {
+                const params = JSON.stringify({
+                    backPressCallback: 'testBackPressCallback'
+                });
+                H5Interface.unregisterBack(params, '');
+                backPressCallbackRegistered = false;
+                document.getElementById('backResult').textContent = '已取消返回键监听';
+            } catch (e) {
+                document.getElementById('backResult').textContent = '取消返回键监听失败: ' + e.message;
+            }
         }
 
         function testBackPress() {
-            safeBridgeCall('onBackPressed', [], 'backResult');
-            showResult('backResult', '🧪 模拟返回按键按下', 'info');
-        }
-
-        function webBackPress() {
-            safeBridgeCall('webBackPress', [null, null], 'backResult');
-            showResult('backResult', '🌐 Web返回处理', 'info');
-        }
-
-        // === 综合测试 ===
-        function runBasicTests() {
-            showResult('comprehensiveResult', '🚀 开始基础功能测试...', 'info');
-            setTimeout(() => {
-                checkLoginStatus();
-                setTimeout(() => getBasicDeviceInfo(), 500);
-                setTimeout(() => getNetworkInfo(), 1000);
-                setTimeout(() => showResult('comprehensiveResult', '✅ 基础功能测试完成！', 'success'), 1500);
-            }, 500);
-        }
-
-        function runAdvancedTests() {
-            showResult('comprehensiveResult', '🧪 开始高级功能测试...', 'info');
-            setTimeout(() => {
-                getDeviceIds();
-                setTimeout(() => getPointInfo(), 500);
-                setTimeout(() => getFeatureList(), 1000);
-                setTimeout(() => showResult('comprehensiveResult', '✅ 高级功能测试完成！', 'success'), 1500);
-            }, 500);
-        }
-
-        function runAllTests() {
-            showResult('comprehensiveResult', '🎯 开始全面测试，请稍等...', 'info');
+            if (!checkInterface()) return;
             
-            const tests = [
-                () => checkLoginStatus(),
-                () => getBasicDeviceInfo(),
-                () => getDeviceIds(),
-                () => getNetworkInfo(),
-                () => getPointInfo(),
-                () => checkMode(),
-                () => getUiMode(),
-                () => isPreloadMode()
-            ];
-
-            let currentTest = 0;
-            const runNextTest = () => {
-                if (currentTest < tests.length) {
-                    tests[currentTest]();
-                    currentTest++;
-                    setTimeout(runNextTest, 800);
-                } else {
-                    const summary = `🎉 全面测试完成！\n\n📊 测试统计:\n成功: ${Object.values(testResults).filter(r => r.success).length}\n失败: ${Object.values(testResults).filter(r => !r.success).length}\n总计: ${Object.keys(testResults).length}`;
-                    showResult('comprehensiveResult', summary, 'success');
-                }
-            };
-
-            setTimeout(runNextTest, 1000);
-        }
-
-        function clearAllResults() {
-            const resultElements = document.querySelectorAll('.result');
-            resultElements.forEach(element => {
-                element.className = 'result';
-                element.textContent = '';
-            });
-            testResults = {};
-            showResult('comprehensiveResult', '🧹 所有结果已清除', 'info');
-        }
-
-        // 添加调试信息
-        function debugBridge() {
-            console.log('=== Bridge 调试信息 ===');
-            console.log('window.AccountInfo 存在:', typeof window.AccountInfo !== 'undefined');
-            if (typeof window.AccountInfo !== 'undefined') {
-                console.log('window.AccountInfo 方法列表:', Object.getOwnPropertyNames(window.AccountInfo));
+            try {
+                H5Interface.webBackPress('', '');
+                document.getElementById('backResult').textContent = '已手动触发返回键事件';
+            } catch (e) {
+                document.getElementById('backResult').textContent = '触发返回键事件失败: ' + e.message;
             }
-            console.log('bridgeAvailable:', bridgeAvailable);
-            console.log('testResults:', testResults);
         }
 
-        // 页面可见性变化检测
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                checkBridgeAvailability();
-            }
-        });
-
-        // 添加键盘快捷键
-        document.addEventListener('keydown', function(event) {
-            if (event.ctrlKey) {
-                switch(event.key) {
-                    case 'Enter':
-                        event.preventDefault();
-                        runBasicTests();
-                        break;
-                    case 'Delete':
-                        event.preventDefault();
-                        clearAllResults();
-                        break;
-                    case 'd':
-                        event.preventDefault();
-                        debugBridge();
-                        break;
+        // 页面加载完成后自动获取基本信息
+        window.onload = function() {
+            if (checkInterface()) {
+                console.log('H5Interface 已准备就绪');
+                
+                // 通知原生页面加载成功
+                try {
+                    H5Interface.handlePageSuccess();
+                } catch (e) {
+                    console.error('通知页面加载成功失败:', e);
                 }
             }
-        });
+        };
 
-        // 定期检查Bridge状态方法
-        setInterval(checkBridgeAvailability, 5000);
-
-        console.log('🎉 Vivo Video JS Bridge 测试页面加载完成！');
-        console.log('💡 提示: 使用 Ctrl+Enter 快速运行基础测试，Ctrl+Delete 清除结果，Ctrl+D 查看调试信息');
-        console.log('🔍 Bridge 调用方式: window.AccountInfo.methodName()');
+        // 监听页面关闭前事件
+        window.onbeforeunload = function() {
+            if (backPressCallbackRegistered) {
+                try {
+                    unregisterBackPress();
+                } catch (e) {
+                    console.error('页面关闭前取消返回键监听失败:', e);
+                }
+            }
+        };
     </script>
 </body>
 </html>
