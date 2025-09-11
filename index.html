@@ -3,304 +3,567 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebView 功能测试页面</title>
+    <title>Vivo Video JS Bridge 测试页面</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            padding: 20px;
             line-height: 1.6;
+            background-color: #f5f5f5;
         }
-        .test-section {
-            margin: 20px 0;
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section {
+            margin-bottom: 30px;
             padding: 15px;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 8px;
+            background: #fafafa;
         }
-        .test-section h3 {
-            margin-top: 0;
+        
+        .section h2 {
             color: #333;
+            margin-top: 0;
+            border-bottom: 2px solid #007cba;
+            padding-bottom: 5px;
         }
+        
         button {
-            background-color: #007cba;
+            background: #007cba;
             color: white;
             border: none;
             padding: 10px 15px;
             margin: 5px;
-            border-radius: 3px;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 14px;
         }
+        
         button:hover {
-            background-color: #005a8b;
+            background: #005a8b;
         }
-        input[type="file"] {
-            margin: 10px 0;
-            padding: 5px;
+        
+        input[type="text"] {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
         }
-        #progress {
-            width: 100%;
-            height: 20px;
-            background-color: #f0f0f0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        #progress-bar {
-            height: 100%;
-            background-color: #007cba;
-            width: 0%;
-            transition: width 0.3s;
-        }
-        .log {
-            background-color: #f5f5f5;
+        
+        .result {
+            background: #e8f4f8;
             padding: 10px;
-            border-radius: 3px;
-            max-height: 200px;
-            overflow-y: auto;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007cba;
             font-family: monospace;
-            font-size: 12px;
+            word-break: break-all;
         }
-        video {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
+        
+        .error {
+            background: #ffe6e6;
+            border-left-color: #ff4444;
+        }
+        
+        .success {
+            background: #e6ffe6;
+            border-left-color: #44ff44;
         }
     </style>
 </head>
 <body>
-    <h1>WebView HtmlWebChromeClient 测试页面</h1>
-    
-    <!-- 控制台日志测试 -->
-    <div class="test-section">
-        <h3>1. 控制台日志测试</h3>
-        <p>测试 onConsoleMessage 方法</p>
-        <button onclick="testConsoleLog()">输出 LOG</button>
-        <button onclick="testConsoleWarn()">输出 WARNING</button>
-        <button onclick="testConsoleError()">输出 ERROR</button>
-        <button onclick="testConsoleDebug()">输出 DEBUG</button>
-        <div id="console-log" class="log"></div>
-    </div>
-
-    <!-- JavaScript 对话框测试 -->
-    <div class="test-section">
-        <h3>2. JavaScript 对话框测试</h3>
-        <p>测试 onJsAlert、onJsConfirm、onJsPrompt 方法</p>
-        <button onclick="testAlert()">测试 Alert</button>
-        <button onclick="testConfirm()">测试 Confirm</button>
-        <button onclick="testPrompt()">测试 Prompt</button>
-        <div id="dialog-result"></div>
-    </div>
-
-    <!-- 文件上传测试 -->
-    <div class="test-section">
-        <h3>3. 文件上传测试</h3>
-        <p>测试 onShowFileChooser 方法</p>
-        <label for="file-single">单文件选择：</label>
-        <input type="file" id="file-single" accept="image/*">
-        <br>
-        <label for="file-multiple">多文件选择：</label>
-        <input type="file" id="file-multiple" multiple accept="image/*,video/*">
-        <br>
-        <label for="file-camera">相机拍照：</label>
-        <input type="file" id="file-camera" accept="image/*" capture="camera">
-        <div id="file-info"></div>
-    </div>
-
-    <!-- 地理位置测试 -->
-    <div class="test-section">
-        <h3>4. 地理位置测试</h3>
-        <p>测试 onGeolocationPermissionsShowPrompt 方法</p>
-        <button onclick="testGeolocation()">获取地理位置</button>
-        <div id="location-info"></div>
-    </div>
-
-    <!-- 页面进度和标题测试 -->
-    <div class="test-section">
-        <h3>5. 页面进度和标题测试</h3>
-        <p>测试 onProgressChanged 和 onReceivedTitle 方法</p>
-        <button onclick="simulateProgress()">模拟页面加载进度</button>
-        <button onclick="changeTitle()">更改页面标题</button>
-        <div>
-            <label>加载进度：</label>
-            <div id="progress">
-                <div id="progress-bar"></div>
-            </div>
-            <span id="progress-text">0%</span>
+    <div class="container">
+        <h1>Vivo Video JS Bridge 测试页面</h1>
+        
+        <!-- 设备信息获取 -->
+        <div class="section">
+            <h2>设备信息获取</h2>
+            <button onclick="getDeviceInfo()">获取设备信息</button>
+            <button onclick="getNetworkInfo()">获取网络信息</button>
+            <button onclick="getAppInfo()">获取应用信息</button>
+            <div id="deviceInfo" class="result" style="display:none;"></div>
         </div>
-        <div>当前标题：<span id="current-title">WebView 功能测试页面</span></div>
-    </div>
 
-    <!-- 视频全屏测试 -->
-    <div class="test-section">
-        <h3>6. 视频全屏测试</h3>
-        <p>测试 onShowCustomView 和 onHideCustomView 方法</p>
-        <video controls>
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-            <source src="https://www.w3schools.com/html/mov_bbb.ogg" type="video/ogg">
-            您的浏览器不支持视频标签。
-        </video>
-        <p>点击视频播放器的全屏按钮测试全屏功能</p>
-    </div>
+        <!-- 用户信息 -->
+        <div class="section">
+            <h2>用户信息</h2>
+            <button onclick="checkLogin()">检查登录状态</button>
+            <button onclick="getUserToken()">获取用户Token</button>
+            <button onclick="goLogin()">跳转登录</button>
+            <div id="userInfo" class="result" style="display:none;"></div>
+        </div>
 
-    <!-- 页面跳转测试 -->
-    <div class="test-section">
-        <h3>7. 页面跳转测试</h3>
-        <p>测试页面跳转和返回功能</p>
-        <button onclick="loadNewPage()">加载新页面（模拟）</button>
-        <button onclick="testBeforeUnload()">测试页面离开确认</button>
+        <!-- 页面导航 -->
+        <div class="section">
+            <h2>页面导航</h2>
+            <input type="text" id="h5Url" placeholder="输入H5页面URL" value="https://www.example.com">
+            <button onclick="jumpToH5()">跳转H5页面</button>
+            <br>
+            <input type="text" id="appUrl" placeholder="输入App URL" value="vivovideo://home">
+            <button onclick="jumpToApp()">跳转App页面</button>
+            <br>
+            <button onclick="closeWebView()">关闭WebView</button>
+            <button onclick="handleBack()">返回操作</button>
+        </div>
+
+        <!-- 支付相关 -->
+        <div class="section">
+            <h2>支付功能</h2>
+            <input type="text" id="payData" placeholder="支付数据" value='{"productId":"test123","amount":"10.00"}'>
+            <input type="text" id="payCallback" placeholder="支付回调" value="payCallback">
+            <br>
+            <button onclick="testPay()">普通支付</button>
+            <button onclick="testPaySingular()">单次支付</button>
+            <button onclick="testPayAutoRenew()">自动续费支付</button>
+            <div id="payResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 积分相关 -->
+        <div class="section">
+            <h2>积分功能</h2>
+            <button onclick="getPointInfo()">获取积分信息</button>
+            <button onclick="signInPoint()">签到积分</button>
+            <input type="number" id="balanceChange" placeholder="积分变化" value="100">
+            <button onclick="changeBalance()">积分变化</button>
+            <div id="pointResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 应用检测 -->
+        <div class="section">
+            <h2>应用检测</h2>
+            <input type="text" id="packageName" placeholder="包名" value="com.android.browser">
+            <button onclick="checkAppInstalled()">检查应用是否安装</button>
+            <input type="text" id="appVersionPackage" placeholder="包名" value="com.vivo.videoplayer">
+            <button onclick="getAppVersionCode()">获取应用版本号</button>
+            <div id="appCheckResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 系统功能 -->
+        <div class="section">
+            <h2>系统功能</h2>
+            <button onclick="showToast()">显示Toast</button>
+            <button onclick="checkMode()">检查模式</button>
+            <button onclick="getUiMode()">获取UI模式</button>
+            <button onclick="turnToFaq()">跳转FAQ</button>
+            <div id="systemResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 网络请求 -->
+        <div class="section">
+            <h2>网络请求</h2>
+            <input type="text" id="httpUrl" placeholder="请求URL" value="https://httpbin.org/get">
+            <button onclick="requestHttp()">发起HTTP请求</button>
+            <div id="httpResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 事件追踪 -->
+        <div class="section">
+            <h2>事件追踪</h2>
+            <input type="text" id="eventId" placeholder="事件ID" value="test_event">
+            <input type="text" id="eventData" placeholder="事件数据" value='{"action":"click","page":"test"}'>
+            <button onclick="traceEvent()">发送事件追踪</button>
+            <div id="traceResult" class="result" style="display:none;"></div>
+        </div>
+
+        <!-- 返回监听 -->
+        <div class="section">
+            <h2>返回按键监听</h2>
+            <button onclick="registerBackListener()">注册返回监听</button>
+            <button onclick="unregisterBackListener()">取消返回监听</button>
+            <div id="backResult" class="result" style="display:none;"></div>
+        </div>
     </div>
 
     <script>
-        // 控制台日志测试
-        function testConsoleLog() {
-            console.log("这是一条 LOG 信息");
-            updateConsoleLog("发送了 LOG 信息");
-        }
-
-        function testConsoleWarn() {
-            console.warn("这是一条 WARNING 信息");
-            updateConsoleLog("发送了 WARNING 信息");
-        }
-
-        function testConsoleError() {
-            console.error("这是一条 ERROR 信息");
-            updateConsoleLog("发送了 ERROR 信息");
-        }
-
-        function testConsoleDebug() {
-            console.debug("这是一条 DEBUG 信息");
-            updateConsoleLog("发送了 DEBUG 信息");
-        }
-
-        function updateConsoleLog(message) {
-            const logDiv = document.getElementById('console-log');
-            logDiv.innerHTML += new Date().toLocaleTimeString() + ": " + message + "<br>";
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
-
-        // JavaScript 对话框测试
-        function testAlert() {
-            alert("这是一个 Alert 对话框测试");
-            document.getElementById('dialog-result').innerHTML = "Alert 对话框已显示";
-        }
-
-        function testConfirm() {
-            const result = confirm("这是一个 Confirm 对话框，请选择确定或取消");
-            document.getElementById('dialog-result').innerHTML = "Confirm 结果: " + (result ? "确定" : "取消");
-        }
-
-        function testPrompt() {
-            const result = prompt("这是一个 Prompt 对话框，请输入一些文本:", "默认文本");
-            document.getElementById('dialog-result').innerHTML = "Prompt 结果: " + (result || "取消");
-        }
-
-        // 文件上传测试
-        document.getElementById('file-single').addEventListener('change', function(e) {
-            handleFileSelect(e, '单文件');
-        });
-
-        document.getElementById('file-multiple').addEventListener('change', function(e) {
-            handleFileSelect(e, '多文件');
-        });
-
-        document.getElementById('file-camera').addEventListener('change', function(e) {
-            handleFileSelect(e, '相机');
-        });
-
-        function handleFileSelect(event, type) {
-            const files = event.target.files;
-            const infoDiv = document.getElementById('file-info');
-            let info = `${type}选择了 ${files.length} 个文件:<br>`;
-            
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                info += `文件 ${i + 1}: ${file.name}, 大小: ${file.size} bytes, 类型: ${file.type}<br>`;
+        // 检查 AccountInfo 对象是否可用
+        function checkBridge() {
+            if (typeof AccountInfo === 'undefined') {
+                console.warn('AccountInfo bridge not available');
+                return false;
             }
-            
-            infoDiv.innerHTML = info;
+            return true;
         }
 
-        // 地理位置测试
-        function testGeolocation() {
-            const locationInfo = document.getElementById('location-info');
+        // 显示结果
+        function showResult(elementId, result, isError = false) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = isError ? 'result error' : 'result success';
+            element.innerHTML = typeof result === 'object' ? JSON.stringify(result, null, 2) : result;
+        }
+
+        // 设备信息获取
+        function getDeviceInfo() {
+            if (!checkBridge()) return;
             
-            if (navigator.geolocation) {
-                locationInfo.innerHTML = "正在获取位置信息...";
-                
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        locationInfo.innerHTML = `位置获取成功:<br>纬度: ${lat}<br>经度: ${lon}`;
-                    },
-                    function(error) {
-                        locationInfo.innerHTML = `位置获取失败: ${error.message}`;
-                    }
-                );
-            } else {
-                locationInfo.innerHTML = "浏览器不支持地理位置功能";
+            try {
+                const deviceInfo = {
+                    model: AccountInfo.getModel(),
+                    androidVersion: AccountInfo.getAv(),
+                    vOsVersion: AccountInfo.getVOs(),
+                    vAppVersion: AccountInfo.getVApp(),
+                    oaid: AccountInfo.getOaid(),
+                    aaid: AccountInfo.getAaid(),
+                    vaid: AccountInfo.getVaid(),
+                    uuid: AccountInfo.getU(),
+                    cpuInfo: AccountInfo.getCpuInfo(),
+                    localIp: AccountInfo.getLocalIpAddress(),
+                    userAgent: AccountInfo.getUa()
+                };
+                showResult('deviceInfo', deviceInfo);
+            } catch (e) {
+                showResult('deviceInfo', 'Error: ' + e.message, true);
             }
         }
 
-        // 页面进度和标题测试
-        function simulateProgress() {
-            let progress = 0;
-            const progressBar = document.getElementById('progress-bar');
-            const progressText = document.getElementById('progress-text');
+        function getNetworkInfo() {
+            if (!checkBridge()) return;
             
-            const interval = setInterval(() => {
-                progress += 10;
-                progressBar.style.width = progress + '%';
-                progressText.textContent = progress + '%';
+            try {
+                const networkInfo = {
+                    netType: AccountInfo.getNetType()
+                };
+                showResult('deviceInfo', networkInfo);
+            } catch (e) {
+                showResult('deviceInfo', 'Error: ' + e.message, true);
+            }
+        }
+
+        function getAppInfo() {
+            if (!checkBridge()) return;
+            
+            try {
+                const appInfo = {
+                    appName: AccountInfo.getAppName(),
+                    channel: AccountInfo.getChannel(),
+                    featureList: AccountInfo.getFeatureList(),
+                    privacyVersion: AccountInfo.getPrivacyVersion()
+                };
+                showResult('deviceInfo', appInfo);
+            } catch (e) {
+                showResult('deviceInfo', 'Error: ' + e.message, true);
+            }
+        }
+
+        // 用户信息
+        function checkLogin() {
+            if (!checkBridge()) return;
+            
+            try {
+                const isLogin = AccountInfo.checkLoginStatus();
+                showResult('userInfo', 'Login Status: ' + isLogin);
+            } catch (e) {
+                showResult('userInfo', 'Error: ' + e.message, true);
+            }
+        }
+
+        function getUserToken() {
+            if (!checkBridge()) return;
+            
+            try {
+                const token = AccountInfo.getToken();
+                showResult('userInfo', 'Token: ' + token);
+            } catch (e) {
+                showResult('userInfo', 'Error: ' + e.message, true);
+            }
+        }
+
+        function goLogin() {
+            if (!checkBridge()) return;
+            
+            try {
+                AccountInfo.gotoLogin('test_from_h5');
+                showResult('userInfo', 'Login redirect initiated');
+            } catch (e) {
+                showResult('userInfo', 'Error: ' + e.message, true);
+            }
+        }
+
+        // 页面导航
+        function jumpToH5() {
+            if (!checkBridge()) return;
+            
+            const url = document.getElementById('h5Url').value;
+            try {
+                AccountInfo.jumpH5(url);
+                showResult('deviceInfo', 'H5 jump initiated to: ' + url);
+            } catch (e) {
+                showResult('deviceInfo', 'Error: ' + e.message, true);
+            }
+        }
+
+        function jumpToApp() {
+            if (!checkBridge()) return;
+            
+            const url = document.getElementById('appUrl').value;
+            try {
+                AccountInfo.jumpToApp(url);
+                showResult('deviceInfo', 'App jump initiated to: ' + url);
+            } catch (e) {
+                showResult('deviceInfo', 'Error: ' + e.message, true);
+            }
+        }
+
+        function closeWebView() {
+            if (!checkBridge()) return;
+            
+            try {
+                AccountInfo.onCloseWebViewFragment();
+                showResult('deviceInfo', 'Close WebView initiated');
+            } catch (e) {
+                showResult('deviceInfo', 'Error: ' + e.message, true);
+            }
+        }
+
+        function handleBack() {
+            if (!checkBridge()) return;
+            
+            try {
+                AccountInfo.onBackPressed();
+                showResult('deviceInfo', 'Back pressed');
+            } catch (e) {
+                showResult('deviceInfo', 'Error: ' + e.message, true);
+            }
+        }
+
+        // 支付功能
+        function testPay() {
+            if (!checkBridge()) return;
+            
+            const payData = document.getElementById('payData').value;
+            const callback = document.getElementById('payCallback').value;
+            
+            try {
+                AccountInfo.onPay(payData, callback);
+                showResult('payResult', 'Payment initiated');
+            } catch (e) {
+                showResult('payResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        function testPaySingular() {
+            if (!checkBridge()) return;
+            
+            const payData = document.getElementById('payData').value;
+            const callback = document.getElementById('payCallback').value;
+            
+            try {
+                AccountInfo.onPaySingular(payData, callback);
+                showResult('payResult', 'Singular payment initiated');
+            } catch (e) {
+                showResult('payResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        function testPayAutoRenew() {
+            if (!checkBridge()) return;
+            
+            const payData = document.getElementById('payData').value;
+            const callback = document.getElementById('payCallback').value;
+            
+            try {
+                AccountInfo.onPayAutoRenew(payData, callback);
+                showResult('payResult', 'Auto-renew payment initiated');
+            } catch (e) {
+                showResult('payResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        // 积分功能
+        function getPointInfo() {
+            if (!checkBridge()) return;
+            
+            try {
+                const pointInfo = {
+                    activityKey: AccountInfo.getPointActivityKey(),
+                    playTime: AccountInfo.getPointPlayTime()
+                };
+                showResult('pointResult', pointInfo);
+            } catch (e) {
+                showResult('pointResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        function signInPoint() {
+            if (!checkBridge()) return;
+            
+            try {
+                AccountInfo.signInPoint(true);
+                showResult('pointResult', 'Sign in point initiated');
+            } catch (e) {
+                showResult('pointResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        function changeBalance() {
+            if (!checkBridge()) return;
+            
+            const balance = document.getElementById('balanceChange').value;
+            try {
+                AccountInfo.onBalanceChange(parseInt(balance));
+                showResult('pointResult', 'Balance change: ' + balance);
+            } catch (e) {
+                showResult('pointResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        // 应用检测
+        function checkAppInstalled() {
+            if (!checkBridge()) return;
+            
+            const packageName = document.getElementById('packageName').value;
+            try {
+                const isInstalled = AccountInfo.isInstalledApp(packageName);
+                showResult('appCheckResult', 'App ' + packageName + ' installed: ' + isInstalled);
+            } catch (e) {
+                showResult('appCheckResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        function getAppVersionCode() {
+            if (!checkBridge()) return;
+            
+            const packageName = document.getElementById('appVersionPackage').value;
+            try {
+                const version = AccountInfo.getAppVersion(packageName);
+                showResult('appCheckResult', 'App ' + packageName + ' version: ' + version);
+            } catch (e) {
+                showResult('appCheckResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        // 系统功能
+        function showToast() {
+            if (!checkBridge()) return;
+            
+            try {
+                AccountInfo.showToast('Hello from H5!');
+                showResult('systemResult', 'Toast shown');
+            } catch (e) {
+                showResult('systemResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        function checkMode() {
+            if (!checkBridge()) return;
+            
+            try {
+                const isMode = AccountInfo.isMode('test_mode');
+                showResult('systemResult', 'Is test mode: ' + isMode);
+            } catch (e) {
+                showResult('systemResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        function getUiMode() {
+            if (!checkBridge()) return;
+            
+            try {
+                const uiMode = AccountInfo.getCurrentUiMode();
+                showResult('systemResult', 'Current UI mode: ' + uiMode);
+            } catch (e) {
+                showResult('systemResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        function turnToFaq() {
+            if (!checkBridge()) return;
+            
+            try {
+                AccountInfo.turnToFaq();
+                showResult('systemResult', 'FAQ page opened');
+            } catch (e) {
+                showResult('systemResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        // 网络请求
+        function requestHttp() {
+            if (!checkBridge()) return;
+            
+            const url = document.getElementById('httpUrl').value;
+            try {
+                AccountInfo.requestHttp(url);
+                showResult('httpResult', 'HTTP request sent to: ' + url);
+            } catch (e) {
+                showResult('httpResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        // 事件追踪
+        function traceEvent() {
+            if (!checkBridge()) return;
+            
+            const eventId = document.getElementById('eventId').value;
+            const eventData = document.getElementById('eventData').value;
+            
+            try {
+                AccountInfo.onTraceDelayEvent(eventId, eventData);
+                showResult('traceResult', 'Event traced: ' + eventId);
+            } catch (e) {
+                showResult('traceResult', 'Error: ' + e.message, true);
+            }
+        }
+
+        // 返回按键监听
+        function registerBackListener() {
+            if (!checkBridge()) return;
+            
+            try {
+                const backConfig = JSON.stringify({
+                    backPressCallback: 'onBackPressed'
+                });
+                AccountInfo.registerBack(backConfig, '');
+                showResult('backResult', 'Back listener registered');
                 
-                if (progress >= 100) {
-                    clearInterval(interval);
-                }
-            }, 200);
+                // 定义回调函数
+                window.onBackPressed = function() {
+                    showResult('backResult', 'Back button pressed! Custom handler called.');
+                };
+            } catch (e) {
+                showResult('backResult', 'Error: ' + e.message, true);
+            }
         }
 
-        function changeTitle() {
-            const newTitle = "新的页面标题 - " + new Date().toLocaleTimeString();
-            document.title = newTitle;
-            document.getElementById('current-title').textContent = newTitle;
-        }
-
-        // 页面跳转测试
-        function loadNewPage() {
-            const newContent = `
-                <h2>新页面内容</h2>
-                <p>这是通过 JavaScript 动态加载的新内容</p>
-                <button onclick="location.reload()">返回原页面</button>
-            `;
-            document.body.innerHTML = newContent;
-        }
-
-        function testBeforeUnload() {
-            window.addEventListener('beforeunload', function(e) {
-                e.preventDefault();
-                e.returnValue = '';
-                return '确定要离开此页面吗？';
-            });
+        function unregisterBackListener() {
+            if (!checkBridge()) return;
             
-            alert('已设置页面离开确认，尝试刷新或关闭页面来测试');
+            try {
+                const backConfig = JSON.stringify({
+                    backPressCallback: 'onBackPressed'
+                });
+                AccountInfo.unregisterBack(backConfig, '');
+                showResult('backResult', 'Back listener unregistered');
+            } catch (e) {
+                showResult('backResult', 'Error: ' + e.message, true);
+            }
         }
 
         // 页面加载完成后的初始化
-        window.onload = function() {
-            console.log("页面加载完成");
-            updateConsoleLog("页面初始化完成");
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, checking bridge availability...');
+            if (checkBridge()) {
+                console.log('AccountInfo bridge is available');
+                showResult('deviceInfo', 'Bridge available - Ready to test!');
+            } else {
+                console.log('AccountInfo bridge is not available');
+                showResult('deviceInfo', 'Bridge not available - Please load in Vivo Video App', true);
+            }
+        });
+
+        // 支付回调示例
+        function payCallback(result) {
+            showResult('payResult', 'Payment callback received: ' + JSON.stringify(result));
         }
-
-        // 监听页面标题变化
-        const titleObserver = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'childList') {
-                    document.getElementById('current-title').textContent = document.title;
-                }
-            });
-        });
-
-        titleObserver.observe(document.querySelector('title'), {
-            childList: true
-        });
     </script>
 </body>
 </html>
